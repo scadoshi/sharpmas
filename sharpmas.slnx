@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Sharpmas.Cli/Sharpmas.Cli.csproj" />
+    <Project Path="src/Sharpmas/Sharpmas.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Sharpmas.Tests/Sharpmas.Tests.csproj" />
+  </Folder>
+</Solution>

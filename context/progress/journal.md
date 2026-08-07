@@ -4,7 +4,17 @@ Newest first.
 
 ## 2026-08-07
 
-Still no code. Refreshed this context against rustmas, which reached feature
+Scaffolded the solution: `Sharpmas` as a class library, `Sharpmas.Cli` as the
+entry point referencing it, `Sharpmas.Tests` referencing the library. .NET 10
+writes the new `.slnx` solution format rather than `.sln`. Template stubs
+deleted, so the library and test project are empty.
+
+Splitting rather than one console project because a test project referencing a
+class library is the well-trodden path, while referencing an executable works
+but is not. rustmas got its tests by keeping logic in the library and the binary
+at four lines.
+
+Still no real code. Refreshed this context against rustmas, which reached feature
 complete and got restructured the same day, so several notes here described a
 version that no longer exists.
 

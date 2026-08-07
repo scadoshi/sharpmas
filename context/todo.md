@@ -8,12 +8,16 @@ them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- Pick the project shape. rustmas landed on one executable with a subcommand per
-  mode, after starting with two and collapsing them. It also arranged the
-  library as ports and adapters: a domain that knows nothing about HTTP or
-  files, an inbound side for the CLI, an outbound side for the network and disk.
-  That structure survived several refactors, so it is worth copying unless C#
-  suggests otherwise.
+- Lay out the library. The projects exist: `Sharpmas` holds everything,
+  `Sharpmas.Cli` is the entry point, `Sharpmas.Tests` references the library.
+  rustmas arranged its library as ports and adapters, a domain that knows nothing
+  about HTTP or files, an inbound side for the CLI, an outbound side for the
+  network and disk. That structure survived several refactors, so it is worth
+  copying unless C# suggests otherwise.
+- Decide how to locate `cache/`. rustmas reads the env var cargo sets, which has
+  no C# equivalent: `AppContext.BaseDirectory` points at `bin/Debug/net10.0/`.
+  Walking up to the `.slnx`, an env var, or the working directory are the
+  options.
 - Argument parsing. `System.CommandLine`, or something smaller. Needs `--year`
   and `--day` as filters, plus `--validate`, `--submit`, and a confirmation
   skip. Note the collision rustmas hit: `-y` is taken by `--year`, so the
