@@ -1,0 +1,19 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+
+# Environment: holds a personal AOC session cookie
+.env
+
+# Puzzle inputs are tied to a personal account, and AOC asks that they not be
+# republished
+inputs/
+
+# IDE
+.vs/
+.idea/
+*.swp
+.DS_Store
