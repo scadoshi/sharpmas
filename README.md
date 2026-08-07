@@ -1,34 +1,34 @@
 # sharpmas
 
-Advent of Code tooling in C#. The same tool as
-[rustmas](https://github.com/scadoshi/rustmas), rebuilt on .NET.
+Advent of Code tooling in C#, rebuilt from
+[rustmas](https://github.com/scadoshi/rustmas).
 
-Nothing is written yet. This repo is the starting point, not a port in progress.
+Nothing here yet except the plan.
 
 ## What it will do
 
-Three things, the same three rustmas does:
+`fetch` downloads puzzle inputs into `inputs/<year>/<NN>.txt`, filtered by year
+and day, skipping whatever is already on disk.
 
-- **fetch**: download puzzle inputs to `inputs/<year>/<NN>.txt`, filtered by
-  year and day, skipping anything already on disk.
-- **solve**: run solutions, filtered the same way, optionally checking answers
-  against an independent third-party solver.
-- **submit**: post answers to adventofcode.com for stars, gated on that check so
-  a known-wrong answer never earns a cooldown.
+`solve` runs the solutions with the same filters, and can check each answer
+against an independent third-party solver on the way.
 
-## Why it exists
+`submit` posts answers to adventofcode.com. It only sends what the solver agreed
+with, because a wrong answer there earns a cooldown that gets longer every time
+you trip it.
 
-Partly to have the tool in C#, partly as real practice in a language being
-learned deliberately. The problem is already solved once, so the interesting
-part is not the puzzle logic, it's how the same design lands in a different
-language: what carries over, what needs a different shape, and what was a Rust
-idiom rather than a good idea.
+## Why
+
+The C# is the point. rustmas already works, so the puzzle logic is a solved
+problem and the real question is what happens to a design when the language
+changes underneath it. Some of it should survive intact. Some of it only existed
+because Rust has no runtime reflection, or because `include_str!` was sitting
+right there.
 
 ## Start here
 
-[`context/`](context/) has everything an AI assistant or a returning human needs:
-what this is, how to work on it, which decisions are already settled in rustmas,
-and which ones C# reopens.
+[`context/`](context/) covers what this is, how to work on it, and which rustmas
+decisions were settled for good reasons versus which ones C# gets to reopen.
 
 ## License
 
