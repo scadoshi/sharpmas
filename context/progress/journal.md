@@ -2,6 +2,23 @@
 
 Newest first.
 
+## 2026-08-07
+
+Still no code. Refreshed this context against rustmas, which reached feature
+complete and got restructured the same day, so several notes here described a
+version that no longer exists.
+
+Three things `todo.md` listed as open are now answered by having been tried:
+one executable with subcommands rather than two, runtime input reading rather
+than embedding, and a registry that can be queried without holding an input.
+
+What changed in rustmas worth knowing before starting: the library is ports and
+adapters now, the cache is a directory of plain files per day rather than one
+document, inputs carry a hash of the cookie that fetched them, puzzle text is
+cached per part, and the answer and verdict types were split by provenance after
+timing exposed that one type was measuring one field while holding two others
+from different sources.
+
 ## 2026-08-06
 
 Repo created. README, this context directory, licence, and a .NET gitignore.

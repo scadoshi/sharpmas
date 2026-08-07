@@ -25,6 +25,11 @@ changes underneath it. Some of it should survive intact. Some of it only existed
 because Rust has no runtime reflection, or because `include_str!` was sitting
 right there.
 
+Clone [rustmas](https://github.com/scadoshi/rustmas) alongside this. Its
+`context/` holds the design notes and, more usefully, the two service contracts,
+recorded from probing the APIs and reading the solver's source rather than
+guessing. None of that is language specific.
+
 ## Start here
 
 [`context/`](context/) covers what this is, how to work on it, and which rustmas

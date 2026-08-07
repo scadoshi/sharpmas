@@ -2,33 +2,45 @@
 
 Nothing is built. These are the decisions to make first, roughly in order.
 
+Where rustmas already answered something, it says so. Those are not settled by
+authority, they are settled by having been tried, sometimes twice. Reopen any of
+them if C# argues otherwise, but know what you are arguing with.
+
 ## Next
 
-- Pick the project shape. One console app, or a class library plus two
-  executables the way rustmas splits `fetch` and `solve`? The split earned its
-  keep there because the two have different triggers and only one needs a
-  cookie.
-- Decide how inputs reach a solution: read at runtime, or embedded as a
-  resource. Runtime reading is probably right, and it removes rustmas's ordering
-  problem where the project cannot build until inputs are downloaded.
-- Decide how a day registers itself. Rust needed a macro because it has no
-  runtime reflection. C# has it, so reflection over an interface, or a source
-  generator, are both available. Whatever it is, adding a day should be one
-  small edit.
+- Pick the project shape. rustmas landed on one executable with a subcommand per
+  mode, after starting with two and collapsing them. It also arranged the
+  library as ports and adapters: a domain that knows nothing about HTTP or
+  files, an inbound side for the CLI, an outbound side for the network and disk.
+  That structure survived several refactors, so it is worth copying unless C#
+  suggests otherwise.
 - Argument parsing. `System.CommandLine`, or something smaller. Needs `--year`
-  and `--day` as filters, plus `--validate`, `--submit`, and `--yes`.
+  and `--day` as filters, plus `--validate`, `--submit`, and a confirmation
+  skip. Note the collision rustmas hit: `-y` is taken by `--year`, so the
+  confirmation skip has no short flag.
+- Decide how a day registers itself. Rust hand-wrote a registry because it has
+  no runtime reflection. C# has it. Two things the registry must do besides
+  dispatch: count how many parts a run would submit, and answer whether a day
+  exists without holding its input, so an unwritten day is skipped before
+  anything downloads.
 
 ## Soon
 
-- The two HTTP clients. Contracts are already recorded in
-  `rustmas/context/references.md`, verified rather than guessed, so this is
-  mostly transcription.
-- How answers and verdicts are modelled. Rust used an enum with the verdict
-  folded into the submittable variant, so a visual answer carrying one was
-  unrepresentable. C# has no direct equivalent, so this needs a real decision
-  rather than a transliteration.
+- The two HTTP clients. Contracts are already in
+  `rustmas/context/references.md`, verified live and against the solver's
+  source, so this is mostly transcription. Read it first.
+- The cache. One directory per day of plain files: the input, a hash of the
+  cookie that fetched it, and the puzzle text one file per part. rustmas tried
+  a single structured document first and it read badly.
+- How answers and verdicts are modelled. rustmas split them by provenance in the
+  end: what the part computed, how long it took, and what each checker said are
+  three different things from three different places. Verdicts are two types,
+  since the solver and AOC can each say things the other cannot.
 - Pull solutions across from `csharp-aoc`, which stays as it is.
 
 ## Later
 
-- Timing per part, split from parse time. Never got built in rustmas either.
+- Timing per part, split from parse time. Measure before validating so no
+  duration includes a network round trip.
+- Refetch the day page after a correct part one, so part two's text lands
+  without asking. Still unbuilt in rustmas too.

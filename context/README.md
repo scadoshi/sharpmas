@@ -50,9 +50,13 @@ deliberate: the shape should be decided in C# terms rather than transliterated.
 
 ## The reference implementation
 
-[rustmas](https://github.com/scadoshi/rustmas) is the working version, cloned at
-`~/Work/rustmas`. Its `context/` directory holds the design notes, the journal,
-and `references.md`, which is the highest-value file here.
+[rustmas](https://github.com/scadoshi/rustmas) is the finished version, cloned
+at `~/Work/rustmas`. Two branches: `main` is the tool with no solutions,
+`scadoshi` adds his. The design notes and `references.md` are on both.
+
+It is feature complete. Fetch, solve, validate against a third-party solver, and
+submit for stars all work, with 27 tests and every service behaviour driven live
+rather than assumed.
 
 **Read `rustmas/context/references.md` before writing any HTTP code.** It records
 both service contracts, verified live and against source rather than guessed:
@@ -72,36 +76,82 @@ both service contracts, verified live and against source rather than guessed:
 That file saves a day of probing and several wrong guesses. None of it is
 language specific.
 
-## What carries over, and what C# reopens
+## What carries over
 
-Settled in rustmas, and language independent:
+Settled in rustmas and language independent. Several of these were reversed once
+before they stuck, and the reasons are in `rustmas/context/design/`.
 
-- Two clients, not one. AOC is authenticated and grades once; the solver is
-  anonymous and repeatable. They differ in auth, contract, and failure
-  semantics.
-- Submission gates on a solver check, because a wrong answer costs a cooldown.
-  An unsupported puzzle submits anyway, since that is the live-event case.
-- Year and day flags are filters rather than lookups, so omitting one means all.
-- Inputs are cached by existing on disk. Never re-download, never overwrite.
-- No local answer cache. It looked mandatory and was not: AOC is stateful and
-  reports "already solved" itself.
-- One line of output per part, carrying the answer and what each checker said.
+**Two clients, not one.** AOC is authenticated and grades each part once. The
+solver is anonymous and answers the same question forever. They differ in auth,
+contract, and failure semantics, so one type covering both hid more than it
+saved. Splitting them also made the cookie's reach obvious: validating needs no
+authentication at all.
 
-Rust specific, and needs deciding fresh:
+**Submission gates on a solver check**, because a wrong answer to AOC costs an
+escalating cooldown and the solver check is free. An unsupported puzzle submits
+anyway, since that is the live-event case where being ahead of the solver is
+exactly when submitting matters.
 
-- `include_str!` embeds inputs at compile time, which is why rustmas cannot
-  build before inputs are downloaded. C# has embedded resources, but reading at
-  runtime is the more natural default and removes that ordering problem.
+**One command, one subcommand per mode.** Two separate executables were tried
+and collapsed. They were split for organisation, nothing is deployed
+separately, and the split only bought a longer invocation.
+
+**Year and day are filters rather than lookups.** Omitting one means all of
+them, so the four flag combinations need no matching, and one shared iterator
+serves every mode.
+
+**Inputs are read at runtime, never embedded.** Solving downloads what it does
+not have, so a fresh clone works with an empty cache and the tool has no
+build-order requirement.
+
+**One directory of plain files per day**, rather than one structured document.
+An input and a page of puzzle text both read badly escaped onto a single JSON
+line, and every file being openable on its own is worth more than a struct.
+
+**Inputs carry a hash of the cookie that fetched them.** They are account
+specific, so swapping accounts silently invalidates them, and nothing catches
+it: the same file answered `280` one day and `138` the next. A mismatch
+refetches the input and keeps the puzzle text, which is identical for everyone.
+
+**Puzzle text splits structurally, not textually.** The day page holds one
+`<article class="day-desc">` per unlocked part, so counting them says which
+parts you have. No parsing of "the answer to part one" and no flag that can
+disagree with the text beside it.
+
+**No local answer cache.** It looked mandatory and was not. AOC is stateful, so
+"already solved" is itself the durable record of a star, and the fact that
+looked irreplaceable was one request away.
+
+**One line of output per part**, carrying the answer, what each checker said,
+and how long it took.
+
+**Types split by provenance.** What a part computed, how long it took, and what
+each checker said come from three different places, so they are three fields
+rather than one type pretending to be coherent. Same for verdicts: the solver
+and AOC can each say things the other cannot, and one shared type meant every
+match carried impossible arms.
+
+## What C# reopens
+
+- `include_str!` and compile-time embedding were rejected in rustmas anyway, so
+  runtime reading is the shared answer rather than a Rust workaround.
 - The `Sized` trait and object safety reasoning is Rust only. C# interfaces are
-  reference types and dispatch dynamically, so the whole question disappears.
-- Dispatch in rustmas is a `macro_rules!` generating one match arm per day,
-  because Rust has no runtime reflection. C# does, so registration by reflection
-  or a source generator is available and probably better.
+  reference types and dispatch dynamically, so the question disappears.
+- Dispatch is a hand-written registry in rustmas because Rust has no runtime
+  reflection. C# has it, so reflection over an interface or a source generator
+  are both available. Whatever it is, adding a day should be one small edit, and
+  the registry should be answerable without holding an input: rustmas counts
+  what a run would submit and reports an unwritten day by asking it.
 - Newtype validation (`Year` wrapping into `Day`, private fields, constructor
-  only) maps onto C# less directly. Records with private constructors and static
+  only) maps less directly. Records with private constructors and static
   factories get close.
 - `Result` and `Option` become exceptions and nullable references, which changes
-  how errors are threaded rather than just how they are spelled.
+  how errors are threaded rather than just how they are spelled. Note where
+  rustmas leans on this: a missing cache file is `None` rather than an error, so
+  "not downloaded yet" is an ordinary answer.
+- Rust's newtypes cannot be deserialised without bypassing their constructors,
+  which is why rustmas stores plain files and parses on read. C# has the same
+  trap with any serialiser that constructs field by field.
 
 ## Do not
 
