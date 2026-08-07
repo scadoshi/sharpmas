@@ -1,11 +1,5 @@
 # Todo
 
-Nothing is built. These are the decisions to make first, roughly in order.
-
-Where rustmas already answered something, it says so. Those are not settled by
-authority, they are settled by having been tried, sometimes twice. Reopen any of
-them if C# argues otherwise, but know what you are arguing with.
-
 ## Where this is
 
 Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
@@ -13,10 +7,33 @@ Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
 `rustmas/context/design/`, so this is transliteration plus asking what the C#
 idiom is wherever the languages diverge.
 
-Next in that order would be `Domain/Solutions/`: `Answer`, `Outcome`, and the
-`ISolution` interface.
+Where rustmas already answered something, the notes below say so. Those are not
+settled by authority, they are settled by having been tried, sometimes twice.
+Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
+
+- **Unwrap `Part`.** It is a `sealed class` holding a nested `PartKind` enum,
+  which was the way to give an enum a method. The C# shape is a bare enum plus
+  an extension method:
+
+  ```csharp
+  public enum Part { One, Two }
+
+  public static class PartExtensions
+  {
+      public static string ToWireValue(this Part part) => part switch { ... };
+  }
+  ```
+
+  Call sites do not change, still `part.ToWireValue()`. What it buys: no
+  allocation per part, one type name instead of two, and no
+  `Kind { get; set; }` letting a `Part` exist in a mutable default state.
+
+  Understood already, just not done. Left for a fresh session.
+
+- **Then `Domain/Solutions/`**: `Answer`, `Outcome`, and the `ISolution`
+  interface.
 
 - Lay out the library. The projects exist: `Sharpmas` holds everything,
   `Sharpmas.Cli` is the entry point, `Sharpmas.Tests` references the library.

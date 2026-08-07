@@ -12,6 +12,10 @@ The mode is translation plus questions: read the Rust, write the C#, ask what
 the idiom is when they diverge. Worth continuing that way, since the design
 decisions are already made and recorded in `rustmas/context/design/`.
 
+`Part` is left as a class wrapping an enum, which is not the idiom. Unwrapping
+it to a bare enum plus an extension method is first on `../todo.md`, understood
+but deliberately parked rather than rushed at the end of a session.
+
 What came up so far, all C# facts rather than design choices:
 
 - No free functions. Every method lives in a type, so a Rust module of loose
