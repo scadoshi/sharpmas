@@ -6,6 +6,16 @@ Where rustmas already answered something, it says so. Those are not settled by
 authority, they are settled by having been tried, sometimes twice. Reopen any of
 them if C# argues otherwise, but know what you are arguing with.
 
+## Where this is
+
+Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
+`Part`. The approach is deliberate: the design is settled and recorded in
+`rustmas/context/design/`, so this is transliteration plus asking what the C#
+idiom is wherever the languages diverge.
+
+Next in that order would be `Domain/Solutions/`: `Answer`, `Outcome`, and the
+`ISolution` interface.
+
 ## Next
 
 - Lay out the library. The projects exist: `Sharpmas` holds everything,

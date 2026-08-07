@@ -2,6 +2,44 @@
 
 Newest first.
 
+## 2026-08-07 (later)
+
+Started translating, working through rustmas file by file rather than designing
+anything new. `Year`, `Day`, and `Part` exist under `Domain/Address/`. Nothing
+else yet.
+
+The mode is translation plus questions: read the Rust, write the C#, ask what
+the idiom is when they diverge. Worth continuing that way, since the design
+decisions are already made and recorded in `rustmas/context/design/`.
+
+What came up so far, all C# facts rather than design choices:
+
+- No free functions. Every method lives in a type, so a Rust module of loose
+  functions becomes a `static class`, or the methods hang off the type they
+  concern. `Year.DaysIn()` and `Year.Latest()` went the second way.
+- Doc comments are `///` like Rust but XML rather than markdown, so
+  `<summary>` and `<see cref="X"/>` rather than prose and `[`Type`]`. The
+  `cref` names are compiler checked.
+- Enums are named integers, not closed sets, so a `switch` over one needs a
+  discard arm and the compiler cannot prove exhaustiveness. `(Part)99` is legal.
+- Nullable comparison lifts: `int? == int` yields false rather than throwing, so
+  `is_none_or` becomes `x is null || x == y`. Both `x < 5` and `x >= 5` are
+  false when `x` is null, which is a trap.
+- Ranges are not values. `Enumerable.Range(start, count)` takes a count rather
+  than an end, and there is no `contains` on a range, so a bounds check is just
+  two comparisons. That fed back into rustmas, where the range was doing the
+  same thing more elaborately.
+- Composition over inheritance. `Day` holds a `Year` rather than extending one.
+  Inheriting would have collided on `Value` and made a `Day` substitutable
+  wherever a `Year` was expected.
+- `sealed` by default, which documents intent and lets the JIT devirtualize.
+
+Two naming rules that differ in a way worth remembering: C#'s `To*` means
+"converts to another representation" and says nothing about cost, while Rust's
+`to_` specifically signals expense, with `as_` for free conversions. So the same
+method is `ToWireValue()` in C# and should have been `wire_value()` in Rust,
+which got renamed there.
+
 ## 2026-08-07
 
 Scaffolded the solution: `Sharpmas` as a class library, `Sharpmas.Cli` as the
