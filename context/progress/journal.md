@@ -2,6 +2,84 @@
 
 Newest first.
 
+## 2026-08-10 (later)
+
+`Domain/Solution/` now holds `Answer`, `AocVerdict`, `SolverVerdict`, and a
+partial `Outcome`. Directory is singular, matching the rename in rustmas.
+
+Everything below was verified by compiling and running it against the built
+library, not by reading. Four of these were live bugs that the build did not
+catch.
+
+- **A `ToString` override on an abstract record never runs.** Every derived
+  record generates its own, which sits below yours in the chain, so virtual
+  dispatch picks theirs. `new AocVerdict.Cooldown("1m 0s")` printed
+  `Cooldown { Wait = 1m 0s }` rather than the switch's text. `sealed override`
+  fixes it: derived records skip generating one when the base forbids it.
+
+  Keep the switch on the base rather than one override per case. A case added
+  later without a line then hits the discard arm and throws, instead of quietly
+  printing `Timeout { }`.
+
+- **Never pass `this` as the value to `ArgumentOutOfRangeException` from inside
+  `ToString`.** `Message` formats that value by calling `ToString()` on it,
+  which re-enters the switch and throws again. The result is not a bad message,
+  it is no message: `Cannot print exception string because Exception.ToString()
+  failed`. Use `UnreachableException` with `GetType().Name`, which cannot
+  recurse.
+
+  `ArgumentOutOfRangeException` is right when a real argument was out of range,
+  as in `Part.WireValue`. It is wrong for an impossible branch with no argument
+  in sight.
+
+- **`required` is about initialization, not nullability.** Nullability says
+  which values are legal; `required` says the caller must supply one. They are
+  mutually exclusive with a constructor: `required` plus a constructor gives
+  `CS9035`, because assigning in a constructor does not count as setting it.
+  Use `required` for plain value bags built with object initializers, a
+  constructor when construction has to validate or derive something. Not both.
+
+- **`Math.Sign` is the translation of Rust's `Ordering`.** C# has no three-case
+  comparison type; the convention is the sign of an `int`, and `CompareTo` only
+  promises a sign, never `-1`/`0`/`1`. Matching on those literals throws on real
+  input, since `string.CompareTo` returns things like `-2`. `Math.Sign` narrows
+  the open type to a closed one, which is the general shape for translating Rust
+  enums into C#: narrow at the boundary, then switch.
+
+- **An enum cannot be given a `ToString`.** It already inherits one from
+  `System.Enum`, and extension members only fill gaps rather than shadow
+  existing members. An extension named `ToString` compiles and is silently never
+  called, since instance members always win overload resolution. Enums also
+  cannot declare members at all, so there is nothing to override.
+
+  `SolverVerdict` became a record hierarchy for this reason, matching
+  `AocVerdict`. Value equality survives the change, since records generate `==`.
+
+- **`private set` and `private init`.** An accessor takes its own access
+  modifier. `{ get; private set; }` is mutable inside, read-only outside;
+  `{ get; }` says even the class does not reassign it. Use `private set` only
+  when the class really does write after construction.
+
+- **`With` means non-destructive in C#**, as in records' `with` expression and
+  the BCL's `WithComparer`. `WithVerdict` now returns a copy rather than
+  mutating, which also matches rustmas, where `with_verdict(mut self)` consumes
+  and returns a value.
+
+  The property must be `private init`, not `init`. A public `init` lets a caller
+  write `outcome with { Verdict = ... }` and skip the submittable-answer check;
+  `private init` blocks that with `CS0272` while `this with { ... }` still works
+  inside the class.
+
+  C# cannot reproduce Rust's consumption. The un-verdicted original stays alive
+  and usable. `private init` at least stops anyone building a wrong one.
+
+### Where this stops
+
+`Outcome` has `Answer`, `Elapsed`, `Verdict`, `Submission`, and `WithVerdict`.
+Still missing `WithSubmission` and the `ToString` carrying the rule that AOC's
+word supersedes the solver's, so a starred part reads `starred` rather than
+repeating that the solver agreed.
+
 ## 2026-08-10
 
 `Part` unwrapped from a class wrapping a nested enum into a bare enum plus

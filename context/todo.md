@@ -3,9 +3,10 @@
 ## Where this is
 
 Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
-`Part`. The approach is deliberate: the design is settled and recorded in
-`rustmas/context/design/`, so this is transliteration plus asking what the C#
-idiom is wherever the languages diverge.
+`Part`. `Domain/Solution/` has `Answer`, `AocVerdict`, `SolverVerdict`, and a
+partial `Outcome`. Builds clean with no warnings. The approach is deliberate:
+the design is settled and recorded in `rustmas/context/design/`, so this is
+transliteration plus asking what the C# idiom is wherever the languages diverge.
 
 Where rustmas already answered something, the notes below say so. Those are not
 settled by authority, they are settled by having been tried, sometimes twice.
@@ -13,36 +14,34 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **Fix the layering in rustmas first.** This blocks the translation rather than
-  running alongside it.
+- **Finish `Outcome`.** It has the four properties and `WithVerdict`. Missing
+  `WithSubmission`, which is the same shape, and `ToString`.
 
-  `domain/solutions/outcome.rs` imports `AocVerdict` and `SolverVerdict` from
-  `outbound::client`, and `domain/solutions/solution.rs` imports `SolverClient`
-  from the same place. Under ports and adapters the dependency only runs the
-  other way, so the domain should own those types and the adapters should map
-  their wire responses onto them.
+  `ToString` is the interesting one. The rule from rustmas: AOC's word
+  supersedes the solver's, so a part AOC graded reads `starred` or `new star`
+  rather than repeating that the solver agreed. Any other AOC reply shows next
+  to what the solver thought. The line is the answer, then the notes in
+  parentheses, then the elapsed time.
 
-  Both verdicts are already pure domain vocabulary. Neither mentions HTTP,
-  neither carries a status code, and `Outcome` matches on them to render a line.
-  They live in `outbound/` because that is where they were first written, not
-  because anything put them there.
+- **Decide the `Visual` newline.** rustmas prefixes art with a newline so it
+  starts on its own line, and has a test asserting `"\n###"`. `Answer.ToString`
+  returns it bare. Settle it while writing `Outcome.ToString`, since that is
+  where the line layout gets decided.
 
-  `SolverClient` is the harder one, since `solve()` calls it. That is a port:
-  the domain should own the interface and the adapter should implement it.
+- **Then `ISolution`.** The trait a day implements: parse once in the
+  constructor, then `PartOne` and `PartTwo` read the parsed result. Rust's
+  `Sized` and object-safety reasoning does not carry over, since C# interfaces
+  dispatch dynamically.
 
-  Do not translate the current layering. Reorganise rustmas, then copy.
+- **Write the first tests.** `Sharpmas.Tests` still has none against rustmas's
+  28. The two worth porting first cover invariants already hit by hand: that an
+  unsubmittable answer never takes a verdict, and the `Outcome` display matrix
+  including AOC superseding the solver.
 
-- **Then finish `Domain/Solutions/`.** Half built and not compiling, which is
-  the intended stopping point:
-  - `Answer.cs` has the three cases. Still needs the private constructor to
-    close the hierarchy, `sealed` on the leaves, and the accessor that answers
-    whether there is a submittable value.
-  - `Outcome.cs` is a stub with public fields. Needs the four fields, the
-    attaching methods that no-op unless the answer is submittable, and the
-    rendering.
-  - `SolverVerdict.cs` is the bare enum. Needs its rendering, and `AocVerdict`
-    does not exist yet.
-  - Then the `ISolution` interface.
+- **Close the hierarchies.** `Answer`, `AocVerdict`, and `SolverVerdict` are
+  abstract records with sealed leaves, but nothing stops outside code adding a
+  case. A `private Answer() { }` on the base fixes that, since only nested types
+  can reach it. Worth doing once the shapes stop moving.
 
 - Lay out the library. The projects exist: `Sharpmas` holds everything,
   `Sharpmas.Cli` is the entry point, `Sharpmas.Tests` references the library.
