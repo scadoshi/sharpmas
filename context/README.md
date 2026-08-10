@@ -4,13 +4,16 @@ Hand this dir to any AI assistant to work on `sharpmas` with full context.
 
 ## Where things are
 
-- [`todo.md`](todo.md) is what is coming next.
+- [`todo.md`](todo.md) is what is coming next. Read it first.
 - [`progress/journal.md`](progress/journal.md) is dated session logs, newest
-  first.
+  first. The latest entry lists the C# facts learned so far, which is worth
+  skimming before answering a language question.
 - [`rules/commit_guidelines.md`](rules/commit_guidelines.md) is binding for any
   commit.
 - `design/` does not exist yet. Add it when a decision gets made, one file per
-  topic, recording rejected options alongside chosen ones.
+  topic, recording rejected options alongside chosen ones. Most decisions are
+  already made in rustmas, so this stays empty until C# forces a different
+  answer.
 
 Update `todo.md` and add a journal entry at the end of a working session.
 
@@ -45,8 +48,33 @@ two confident assertions turned out to be wrong.
 Advent of Code tooling in C#: fetch inputs, run solutions, check answers against
 a third-party solver, submit for stars.
 
-Nothing is built yet. No project structure has been chosen, and that is
-deliberate: the shape should be decided in C# terms rather than transliterated.
+### Where it stands
+
+```
+sharpmas.slnx
+src/Sharpmas/            class library, the whole tool
+  Domain/Address/        Year.cs, Day.cs, Part.cs
+src/Sharpmas.Cli/        console entry point, still Hello World
+tests/Sharpmas.Tests/    xunit, references the library, no tests yet
+```
+
+`Year`, `Day`, and `Part` are translated. Nothing else exists. The CLI does
+nothing and there are no tests.
+
+### How it is being built
+
+Translating rustmas file by file, in roughly its own dependency order. Scotty
+writes the C# and asks what the idiom is wherever the languages diverge, then
+the answers get recorded in the journal.
+
+That means the job here is usually **explaining C#, not designing**. The design
+is settled and lives in `rustmas/context/design/`. When something looks wrong in
+the translation, say so, but check the Rust first: it is probably deliberate and
+the reason is probably written down.
+
+Answer as an educator. He knows programming and knows Rust deeply. He does not
+know C#. Translate between the two, name the idiom, say when there is no clean
+analogue.
 
 ## The reference implementation
 
@@ -55,8 +83,13 @@ at `~/Work/rustmas`. Two branches: `main` is the tool with no solutions,
 `scadoshi` adds his. The design notes and `references.md` are on both.
 
 It is feature complete. Fetch, solve, validate against a third-party solver, and
-submit for stars all work, with 27 tests and every service behaviour driven live
+submit for stars all work, with 28 tests and every service behaviour driven live
 rather than assumed.
+
+Both repos follow the same branch rule, which is written up in
+`rustmas/context/rules/branches.md`: `main` is the tool, a personal branch adds
+solutions on top, and changes flow one way by merging `main` down. sharpmas has
+only `main` so far.
 
 **Read `rustmas/context/references.md` before writing any HTTP code.** It records
 both service contracts, verified live and against source rather than guessed:
@@ -142,9 +175,11 @@ match carried impossible arms.
   are both available. Whatever it is, adding a day should be one small edit, and
   the registry should be answerable without holding an input: rustmas counts
   what a run would submit and reports an unwritten day by asking it.
-- Newtype validation (`Year` wrapping into `Day`, private fields, constructor
-  only) maps less directly. Records with private constructors and static
-  factories get close.
+- Newtype validation carried over cleanly, as it turned out. `Year` and `Day`
+  are `sealed class`es with get-only properties and validating constructors, and
+  `Day` takes a built `Year` rather than a number, so the cascade holds. The one
+  C# hazard: a get-only auto-property left unassigned silently stays at
+  `default` rather than failing to compile, which bit once already.
 - `Result` and `Option` become exceptions and nullable references, which changes
   how errors are threaded rather than just how they are spelled. Note where
   rustmas leans on this: a missing cache file is `None` rather than an error, so

@@ -3,7 +3,7 @@
 Advent of Code tooling in C#, rebuilt from
 [rustmas](https://github.com/scadoshi/rustmas).
 
-Nothing here yet except the plan.
+`Year`, `Day`, and `Part` exist. Everything else is still the plan.
 
 ## What it will do
 
