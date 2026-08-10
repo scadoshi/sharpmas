@@ -25,19 +25,16 @@ public sealed class Day
     /// </summary>
     /// <param name="year">The event the day belongs to.</param>
     /// <param name="day">The day of that event, counting from 1.</param>
-    /// <exception cref="InvalidOperationException">
+    /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="day"/> falls outside the range
-    /// <paramref name="year"/> actually published.
+    /// <paramref name="year"/> actually published, which is
+    /// <see cref="Address.Year.DaysIn"/> rather than always 25.
     /// </exception>
     public Day(Year year, int day)
     {
+        ArgumentOutOfRangeException.ThrowIfLessThan(day, 1);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(day, year.DaysIn());
         Year = year;
-        if (day < 1 || day > Year.DaysIn())
-        {
-            throw new InvalidOperationException(
-                $"invalid day for year {Year.Value}; must be within 1 and {Year.DaysIn()}"
-            );
-        }
         Value = day;
     }
 
@@ -56,12 +53,12 @@ public sealed class Day
     {
         return Enumerable
             .Range(Year.FirstYear, Year.Latest() - Year.FirstYear + 1)
-            .Where(y => year?.Equals(y) ?? true)
+            .Where(y => year is null || year == y)
             .Select(y => new Year(y))
             .SelectMany(y =>
                 Enumerable
                     .Range(1, y.DaysIn())
-                    .Where(d => day?.Equals(d) ?? true)
+                    .Where(d => day is null || day == d)
                     .Select(d => new Day(y, d))
             );
     }

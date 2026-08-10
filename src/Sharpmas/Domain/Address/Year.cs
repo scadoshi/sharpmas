@@ -24,18 +24,14 @@ public sealed class Year
     /// Creates a validated year.
     /// </summary>
     /// <param name="year">The calendar year of the event.</param>
-    /// <exception cref="InvalidOperationException">
+    /// <exception cref="ArgumentOutOfRangeException">
     /// Thrown when <paramref name="year"/> falls outside <see cref="FirstYear"/>
     /// through <see cref="Latest"/>.
     /// </exception>
     public Year(int year)
     {
-        if (year < FirstYear || year > Latest())
-        {
-            throw new InvalidOperationException(
-                $"invalid year: must be within {FirstYear} and {Latest()}"
-            );
-        }
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, Latest());
+        ArgumentOutOfRangeException.ThrowIfLessThan(year, FirstYear);
         Value = year;
     }
 

@@ -13,27 +13,36 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **Unwrap `Part`.** It is a `sealed class` holding a nested `PartKind` enum,
-  which was the way to give an enum a method. The C# shape is a bare enum plus
-  an extension method:
+- **Fix the layering in rustmas first.** This blocks the translation rather than
+  running alongside it.
 
-  ```csharp
-  public enum Part { One, Two }
+  `domain/solutions/outcome.rs` imports `AocVerdict` and `SolverVerdict` from
+  `outbound::client`, and `domain/solutions/solution.rs` imports `SolverClient`
+  from the same place. Under ports and adapters the dependency only runs the
+  other way, so the domain should own those types and the adapters should map
+  their wire responses onto them.
 
-  public static class PartExtensions
-  {
-      public static string ToWireValue(this Part part) => part switch { ... };
-  }
-  ```
+  Both verdicts are already pure domain vocabulary. Neither mentions HTTP,
+  neither carries a status code, and `Outcome` matches on them to render a line.
+  They live in `outbound/` because that is where they were first written, not
+  because anything put them there.
 
-  Call sites do not change, still `part.ToWireValue()`. What it buys: no
-  allocation per part, one type name instead of two, and no
-  `Kind { get; set; }` letting a `Part` exist in a mutable default state.
+  `SolverClient` is the harder one, since `solve()` calls it. That is a port:
+  the domain should own the interface and the adapter should implement it.
 
-  Understood already, just not done. Left for a fresh session.
+  Do not translate the current layering. Reorganise rustmas, then copy.
 
-- **Then `Domain/Solutions/`**: `Answer`, `Outcome`, and the `ISolution`
-  interface.
+- **Then finish `Domain/Solutions/`.** Half built and not compiling, which is
+  the intended stopping point:
+  - `Answer.cs` has the three cases. Still needs the private constructor to
+    close the hierarchy, `sealed` on the leaves, and the accessor that answers
+    whether there is a submittable value.
+  - `Outcome.cs` is a stub with public fields. Needs the four fields, the
+    attaching methods that no-op unless the answer is submittable, and the
+    rendering.
+  - `SolverVerdict.cs` is the bare enum. Needs its rendering, and `AocVerdict`
+    does not exist yet.
+  - Then the `ISolution` interface.
 
 - Lay out the library. The projects exist: `Sharpmas` holds everything,
   `Sharpmas.Cli` is the entry point, `Sharpmas.Tests` references the library.

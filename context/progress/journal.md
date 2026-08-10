@@ -2,6 +2,63 @@
 
 Newest first.
 
+## 2026-08-10
+
+`Part` unwrapped from a class wrapping a nested enum into a bare enum plus
+`PartExtensions`, which is where this session's C# discoveries came from.
+
+- **Extension members (C# 14).** An `extension(Part part)` block inside a static
+  class declares the receiver once and holds properties as well as methods,
+  where the old `this Part part` form was methods only. Drop the parameter name,
+  `extension(Part)`, and the members are static, so an enum can carry
+  `Part.All`. `ToWireValue()` became the `WireValue` property. Verified
+  compiling and running on `net10.0`. It lowers to the same static method, so it
+  is spelling rather than a new mechanism.
+- Properties signal cheap and side-effect free. Anything touching the network or
+  disk stays a method, which matters once the clients land.
+- Extension class naming is `PartExtensions`. The BCL spells it out and
+  pluralises it, since the class is named for the set it holds.
+- **Records.** `record` alone means `record class`; `record struct` is the
+  opt-in. Positional parameters work at any nesting level, so nesting the cases
+  inside the base buys namespacing, not payloads.
+- **Closing a hierarchy** is a `private` constructor on the abstract base plus
+  nested cases, since only a nested type can reach it. That is the closest C#
+  gets to a Rust enum.
+- Even so, **exhaustiveness is not checked**. A closed hierarchy with every case
+  handled still warns `CS8509`, because `null` always inhabits a reference type.
+  A throwing discard arm is permanent ceremony here.
+- **Validated records must redeclare the property as `get;`, never `init;`.**
+  Tested both: with `init`, a `with` expression assigns the property directly
+  and silently bypasses the constructor's validation. With `get;` the same
+  expression fails to compile. Records are otherwise the better newtype, since
+  value equality is what you want from one.
+- Guards: `ArgumentOutOfRangeException.ThrowIfLessThan` and friends generate
+  messages naming the parameter and value, via `CallerArgumentExpression`.
+  `Year` and `Day` both use them now, and both throw
+  `ArgumentOutOfRangeException` rather than `InvalidOperationException`, which
+  means "wrong state for this call" and was the wrong type for a bad argument.
+- Shape to repeat in every validated type: guards first, then assign. Assigning
+  before validating leaves a half-built object alive for a few lines.
+
+`Duration` translates to `TimeSpan`.
+
+### Where this stops
+
+Mid-file in `Domain/Solutions/`, deliberately. `Answer.cs`, `Outcome.cs`, and
+`SolverVerdict.cs` exist and are half built. `Outcome` in particular is a stub
+with public fields and no constructor. This does not compile cleanly and that is
+fine.
+
+The reason for stopping: modelling `Outcome` surfaced a layering problem **in
+rustmas**, not here. `domain/solutions/outcome.rs` imports `AocVerdict` and
+`SolverVerdict` from `outbound::client`, and `solution.rs` imports
+`SolverClient` from the same place. A domain type depending on an adapter type
+is backwards for ports and adapters, and it has been true for a while without
+anyone minding.
+
+Next session is a reorganisation of rustmas to fix that, then the translation
+picks up from a version worth copying. Do not translate the current layering.
+
 ## 2026-08-07 (later)
 
 Started translating, working through rustmas file by file rather than designing
