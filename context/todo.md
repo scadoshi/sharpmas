@@ -34,9 +34,19 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
   dispatch dynamically.
 
 - **Write the first tests.** `Sharpmas.Tests` still has none against rustmas's
-  28. The two worth porting first cover invariants already hit by hand: that an
+  65. The two worth porting first cover invariants already hit by hand: that an
   unsubmittable answer never takes a verdict, and the `Outcome` display matrix
   including AOC superseding the solver.
+
+  What earns a test is settled in rustmas and carries over: something more than
+  one day depends on, or an error path nothing else exercises. Not the happy
+  path of a day's puzzle logic, which is what `--validate` is for, and never a
+  table of known answers as a regression guard.
+
+- **Add `Answer.Unwritten`.** rustmas grew a fourth case after `None` turned out
+  to mean three different things: no answer exists, nobody has written this part
+  yet, and there is no such puzzle. `Unwritten` splits the second off and prints
+  `(unwritten)`. `Answer.cs` currently has `Value`, `Visual`, and `None` only.
 
 - **Close the hierarchies.** `Answer`, `AocVerdict`, and `SolverVerdict` are
   abstract records with sealed leaves, but nothing stops outside code adding a
@@ -82,4 +92,10 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 - Timing per part, split from parse time. Measure before validating so no
   duration includes a network round trip.
 - Refetch the day page after a correct part one, so part two's text lands
-  without asking. Still unbuilt in rustmas too.
+  without asking. Built in rustmas since, and confirmed working. The timing is
+  the whole point: the cache is read at the top of the day loop and the
+  submission happens further down, so the run that earns the star has already
+  read a cache in which part two was still locked. Hanging the refetch off a
+  `Correct` verdict on part one catches the one moment it is certain to have
+  just unlocked. Reuses the "is part two missing" check, so a day that already
+  has it costs a cache read and no request.

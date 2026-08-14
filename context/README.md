@@ -10,6 +10,8 @@ Hand this dir to any AI assistant to work on `sharpmas` with full context.
   skimming before answering a language question.
 - [`rules/commit_guidelines.md`](rules/commit_guidelines.md) is binding for any
   commit.
+- [`rules/doc_comments.md`](rules/doc_comments.md) is binding for any doc
+  comment. One line unless a reader would otherwise get it wrong.
 - `design/` does not exist yet. Add it when a decision gets made, one file per
   topic, recording rejected options alongside chosen ones. Most decisions are
   already made in rustmas, so this stays empty until C# forces a different
@@ -54,12 +56,14 @@ a third-party solver, submit for stars.
 sharpmas.slnx
 src/Sharpmas/            class library, the whole tool
   Domain/Address/        Year.cs, Day.cs, Part.cs
+  Domain/Solution/       Answer.cs, AocVerdict.cs, SolverVerdict.cs, Outcome.cs
 src/Sharpmas.Cli/        console entry point, still Hello World
 tests/Sharpmas.Tests/    xunit, references the library, no tests yet
 ```
 
-`Year`, `Day`, and `Part` are translated. Nothing else exists. The CLI does
-nothing and there are no tests.
+The address types are translated, as are both verdicts and `Answer`. `Outcome`
+is partial. Nothing reaches the network or the disk yet, the CLI does nothing,
+and there are no tests. `todo.md` has the current state in detail.
 
 ### How it is being built
 
@@ -79,12 +83,13 @@ analogue.
 ## The reference implementation
 
 [rustmas](https://github.com/scadoshi/rustmas) is the finished version, cloned
-at `~/Work/rustmas`. Two branches: `main` is the tool with no solutions,
+at `~/Developer/rustmas`. Two branches: `main` is the tool with no solutions,
 `scadoshi` adds his. The design notes and `references.md` are on both.
 
 It is feature complete. Fetch, solve, validate against a third-party solver, and
-submit for stars all work, with 28 tests and every service behaviour driven live
-rather than assumed.
+submit for stars all work, with 65 tests and every service behaviour driven live
+rather than assumed. Day one of every year is solved except 2019, which is being
+saved to do in one run.
 
 Both repos follow the same branch rule, which is written up in
 `rustmas/context/rules/branches.md`: `main` is the tool, a personal branch adds
@@ -157,6 +162,16 @@ looked irreplaceable was one request away.
 
 **One line of output per part**, carrying the answer, what each checker said,
 and how long it took.
+
+**An absence must mean one thing.** The single most productive bug hunt in
+rustmas was finding every place where something missing could mean two
+different things with nothing to decide which. A day cached without part two's
+text meant either "still locked" or "never fetched". `Answer.None` meant no
+answer, or nobody wrote it, or no such puzzle. A cache file read as blank meant
+empty or absent. An unreadable cookie was indistinguishable from an unset one.
+Each was one line to fix and each had produced a wrong answer or a silent
+skip. C# makes this easier to get wrong, since `null` is the same token for all
+of them, so name the cases rather than reaching for a nullable.
 
 **Types split by provenance.** What a part computed, how long it took, and what
 each checker said come from three different places, so they are three fields
