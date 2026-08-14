@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Sharpmas.Extensions;
+
 namespace Sharpmas.Domain.Solution;
 
 /// <summary>
@@ -12,7 +15,7 @@ namespace Sharpmas.Domain.Solution;
 public record Outcome
 {
     /// <summary>What the part produced.</summary>
-    public Answer Answer { get; }
+    public AnswerResult AnswerResult { get; }
 
     /// <summary>
     /// Time to compute the answer. Never includes a network round trip.
@@ -44,12 +47,24 @@ public record Outcome
     /// </summary>
     /// <param name="answer">What the part produced.</param>
     /// <param name="elapsed">How long producing it took.</param>
-    public Outcome(Answer answer, TimeSpan elapsed)
+    public Outcome(AnswerResult answerResult, TimeSpan elapsed)
     {
-        Answer = answer;
+        AnswerResult = answerResult;
         Elapsed = elapsed;
         Verdict = null;
         Submission = null;
+    }
+
+    public string? GetValue()
+    {
+        return AnswerResult switch
+        {
+            AnswerResult.Ok(Answer.Value(string value)) => value,
+            AnswerResult.Ok(_) or AnswerResult.Err(_) => null,
+            _ => throw new UnreachableException(
+                $"unhandled {nameof(AnswerResult)}: {GetType().Name}"
+            ),
+        };
     }
 
     /// <summary>
@@ -64,10 +79,51 @@ public record Outcome
     /// <returns>A copy carrying <paramref name="verdict"/>.</returns>
     public Outcome WithVerdict(SolverVerdict verdict)
     {
-        if (Answer.GetValue() is null)
+        if (GetValue() is null)
         {
             return this;
         }
         return this with { Verdict = verdict };
+    }
+
+    public Outcome WithSubmission(AocVerdict submission)
+    {
+        if (GetValue() is null)
+        {
+            return this;
+        }
+        return this with { Submission = submission };
+    }
+
+    public override string ToString()
+    {
+        string message = "";
+        message += AnswerResult switch
+        {
+            AnswerResult.Ok(Answer answer) => answer.ToString(),
+            // The whole chain, since the outermost message rarely names the day.
+            AnswerResult.Err(Exception exception) => $"error: {string.Join(
+                ": ",
+                exception.Causes().Select(cause => cause.Message)
+            )}",
+            _ => throw new UnreachableException(
+                $"unhandled {nameof(AnswerResult)}: {AnswerResult.GetType().Name}"
+            ),
+        };
+        string notes = (Verdict, Submission) switch
+        {
+            (_, AocVerdict.Correct) => "new star",
+            (_, AocVerdict.AlreadySolved) => "starred",
+            (SolverVerdict v, AocVerdict s) => $"{v}, {s}",
+            (SolverVerdict v, null) => $"{v}",
+            (null, AocVerdict s) => $"{s}",
+            (null, null) => "",
+        };
+        if (notes.Length != 0)
+        {
+            message += $" ({notes})";
+        }
+        message += $" [{Elapsed.Formatted()}]";
+        return message;
     }
 }
