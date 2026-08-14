@@ -56,13 +56,15 @@ a third-party solver, submit for stars.
 sharpmas.slnx
 src/Sharpmas/            class library, the whole tool
   Domain/Address/        Year.cs, Day.cs, Part.cs
-  Domain/Solution/       Answer.cs, AocVerdict.cs, SolverVerdict.cs, Outcome.cs
+  Domain/Solution/       Answer.cs, AnswerResult.cs, AocVerdict.cs,
+                         SolverVerdict.cs, Outcome.cs
+  Extensions/            ExceptionExtensions.cs, TimeSpanExtensions.cs
 src/Sharpmas.Cli/        console entry point, still Hello World
 tests/Sharpmas.Tests/    xunit, references the library, no tests yet
 ```
 
-The address types are translated, as are both verdicts and `Answer`. `Outcome`
-is partial. Nothing reaches the network or the disk yet, the CLI does nothing,
+The address types are translated, as are both verdicts, `Answer`, and a finished
+`Outcome`. Nothing reaches the network or the disk yet, the CLI does nothing,
 and there are no tests. `todo.md` has the current state in detail.
 
 ### How it is being built

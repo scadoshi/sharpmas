@@ -3,8 +3,11 @@
 ## Where this is
 
 Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
-`Part`. `Domain/Solution/` has `Answer`, `AocVerdict`, `SolverVerdict`, and a
-partial `Outcome`. Builds clean with no warnings. The approach is deliberate:
+`Part`. `Domain/Solution/` has `Answer`, `AnswerResult`, `AocVerdict`,
+`SolverVerdict`, and a finished `Outcome`. `Extensions/` has `Causes` on
+`Exception` and `Formatted` on `TimeSpan`, both of which exist because
+`Outcome.ToString` needed something Rust gives away. Builds clean with no
+warnings, and there are still no tests. The approach is deliberate:
 the design is settled and recorded in `rustmas/context/design/`, so this is
 transliteration plus asking what the C# idiom is wherever the languages diverge.
 
@@ -14,34 +17,35 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **Finish `Outcome`.** It has the four properties and `WithVerdict`. Missing
-  `WithSubmission`, which is the same shape, and `ToString`.
+- **Write the first tests. This is the next thing.** `Sharpmas.Tests` still has
+  none against rustmas's 65, and `dotnet test` currently reports that no test is
+  available in the assembly, so the discoverer or the xunit packages need
+  sorting before anything can run. Fix that first, then port
+  `outcome.rs`'s eleven tests, which are the ones worth having: the display
+  matrix including AOC superseding the solver, and that an unsubmittable answer
+  never takes a verdict.
 
-  `ToString` is the interesting one. The rule from rustmas: AOC's word
-  supersedes the solver's, so a part AOC graded reads `starred` or `new star`
-  rather than repeating that the solver agreed. Any other AOC reply shows next
-  to what the solver thought. The line is the answer, then the notes in
-  parentheses, then the elapsed time.
-
-- **Decide the `Visual` newline.** rustmas prefixes art with a newline so it
-  starts on its own line, and has a test asserting `"\n###"`. `Answer.ToString`
-  returns it bare. Settle it while writing `Outcome.ToString`, since that is
-  where the line layout gets decided.
-
-- **Then `ISolution`.** The trait a day implements: parse once in the
-  constructor, then `PartOne` and `PartTwo` read the parsed result. Rust's
-  `Sized` and object-safety reasoning does not carry over, since C# interfaces
-  dispatch dynamically.
-
-- **Write the first tests.** `Sharpmas.Tests` still has none against rustmas's
-  65. The two worth porting first cover invariants already hit by hand: that an
-  unsubmittable answer never takes a verdict, and the `Outcome` display matrix
-  including AOC superseding the solver.
+  Port the `notes()` helper along with them. It splits the line at `" ["` so an
+  assertion compares the answer and notes without pinning a duration, which is
+  the only part of the line that varies.
 
   What earns a test is settled in rustmas and carries over: something more than
   one day depends on, or an error path nothing else exercises. Not the happy
   path of a day's puzzle logic, which is what `--validate` is for, and never a
   table of known answers as a regression guard.
+
+- **Decide the `Visual` newline.** rustmas prefixes art with a newline so it
+  starts on its own line, and has a test asserting `"\n###"`. `Answer.ToString`
+  returns it bare. Settle it while porting the display tests, since that is
+  where it will show up as a failure.
+
+- **Then `ISolution`.** The trait a day implements: parse once in the
+  constructor, then `PartOne` and `PartTwo` read the parsed result. Rust's
+  `Sized` and object-safety reasoning does not carry over, since C# interfaces
+  dispatch dynamically. The open question is how a day reports a bad input,
+  since a constructor can only throw. A `static abstract` factory on the
+  interface is the C# analogue of `fn new(input) -> Result<Self>`, and it stays
+  dispatchable from generic code.
 
 - **Add `Answer.Unwritten`.** rustmas grew a fourth case after `None` turned out
   to mean three different things: no answer exists, nobody has written this part

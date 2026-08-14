@@ -2,6 +2,50 @@
 
 Newest first.
 
+## 2026-08-14
+
+`Outcome` is finished: `GetValue`, `WithVerdict`, `WithSubmission`, and
+`ToString`. Two extension classes came out of it, and the reason both exist is
+that Rust gave away for free what C# makes you write.
+
+`AnswerResult` stands in for `Result<Answer>`. An abstract record with `Ok` and
+`Err` cases, so a part that failed is held rather than propagated and one broken
+part does not hide the other's answer. The alternative was `Answer?` next to
+`Exception?`, which allows both null and both set, and neither means anything.
+
+Three C# facts learned writing it:
+
+- **Extension methods are a static class with `this` on the first parameter.**
+  The first attempt subclassed `Exception`, which compiles and does nothing:
+  the method then only exists on a type nothing throws. Inheritance is not
+  involved, which is exactly why it works on types you do not own.
+- **A `using` for the namespace is what brings extensions into scope**, not one
+  for the type. Both call sites failed with "does not contain a definition for"
+  until `using Sharpmas.Extensions;` went in, and the error names the type
+  rather than the missing import.
+- **`TimeSpan.Nanoseconds` is the component, not the total.** It reports
+  0 to 999 within the current microsecond. The other three read as `Total*`, so
+  the odd one out is easy to miss. `TimeSpan` resolution is 100ns anyway, so
+  that branch can only land on multiples of 100 and will never read quite like
+  Rust's.
+
+`or` patterns are worth knowing: `Answer.Visual or Answer.None => null` collapses
+two arms. `and` and `not` exist too, which Rust has no equivalent for. The trade
+is that C# cannot prove a hierarchy is closed, which is why every switch here
+carries an `UnreachableException` arm that Rust would not need. Richer
+combinators over a set the compiler cannot verify.
+
+Found one thing worth changing in rustmas rather than porting. The notes in
+`Display for Outcome` were built as a `Vec<String>` and joined, but every arm of
+the match has a fixed count of zero, one, or two, so the join was joining a list
+whose shape was decided one line above it. Building the string directly in each
+arm is simpler in both languages. Fixed on rustmas `main` and merged down.
+
+### Next
+
+Tests. `dotnet test` currently finds no tests in the assembly, so that needs
+sorting before anything can be ported. `todo.md` has the order.
+
 ## 2026-08-10 (later)
 
 `Domain/Solution/` now holds `Answer`, `AocVerdict`, `SolverVerdict`, and a
