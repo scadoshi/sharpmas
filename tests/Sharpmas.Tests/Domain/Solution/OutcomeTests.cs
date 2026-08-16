@@ -4,7 +4,7 @@ using Sharpmas.Domain.Solution;
 
 public class OutcomeTests
 {
-    private static Outcome Solved(string data = "138")
+    private static Outcome Solved(string data = "foo")
     {
         return new Outcome(new AnswerResult.Ok(new Answer.Value(data)), TimeSpan.Zero);
     }
@@ -21,35 +21,35 @@ public class OutcomeTests
     [Fact]
     public void BareAnswerHasNoNotes()
     {
-        Assert.Equal("138 [0ns]", Solved().ToString());
+        Assert.Equal("foo [0ns]", Solved().ToString());
     }
 
     [Fact]
     public void SolverVerdictAloneShows()
     {
         var outcome = Solved().WithVerdict(new SolverVerdict.High());
-        Assert.Equal("138 (high) [0ns]", outcome.ToString());
+        Assert.Equal("foo (high) [0ns]", outcome.ToString());
     }
 
     [Fact]
     public void AocVerdictAloneShows()
     {
         var outcome = Solved().WithSubmission(new AocVerdict.Low());
-        Assert.Equal("138 (low) [0ns]", outcome.ToString());
+        Assert.Equal("foo (low) [0ns]", outcome.ToString());
     }
 
     [Fact]
     public void AocCorrectReadsAsANewStar()
     {
         var outcome = Solved().WithSubmission(new AocVerdict.Correct());
-        Assert.Equal("138 (new star) [0ns]", outcome.ToString());
+        Assert.Equal("foo (new star) [0ns]", outcome.ToString());
     }
 
     [Fact]
     public void AocAlreadySolvedReadsAsStarred()
     {
         var outcome = Solved().WithSubmission(new AocVerdict.AlreadySolved());
-        Assert.Equal("138 (starred) [0ns]", outcome.ToString());
+        Assert.Equal("foo (starred) [0ns]", outcome.ToString());
     }
 
     [Fact]
@@ -58,12 +58,12 @@ public class OutcomeTests
         var starred = Solved()
             .WithVerdict(new SolverVerdict.Correct())
             .WithSubmission(new AocVerdict.AlreadySolved());
-        Assert.Equal("138 (starred) [0ns]", starred.ToString());
+        Assert.Equal("foo (starred) [0ns]", starred.ToString());
 
         var fresh = Solved()
             .WithVerdict(new SolverVerdict.Correct())
             .WithSubmission(new AocVerdict.Correct());
-        Assert.Equal("138 (new star) [0ns]", fresh.ToString());
+        Assert.Equal("foo (new star) [0ns]", fresh.ToString());
     }
 
     /// <summary>
@@ -76,14 +76,14 @@ public class OutcomeTests
         var outcome = Solved()
             .WithVerdict(new SolverVerdict.Correct())
             .WithSubmission(new AocVerdict.Cooldown("1m 0s"));
-        Assert.Equal("138 (correct, rate limited, 1m 0s left to wait) [0ns]", outcome.ToString());
+        Assert.Equal("foo (correct, rate limited, 1m 0s left to wait) [0ns]", outcome.ToString());
     }
 
     [Fact]
     public void TimingAlwaysRenders()
     {
         var outcome = new Outcome(
-            new AnswerResult.Ok(new Answer.Value("138")),
+            new AnswerResult.Ok(new Answer.Value("foo")),
             TimeSpan.FromMicroseconds(7)
         );
         Assert.EndsWith("[7µs]", outcome.ToString());
