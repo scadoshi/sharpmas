@@ -73,7 +73,7 @@ public abstract record Answer
         return this switch
         {
             Value(string data) => $"{data}",
-            Visual(string art) => $"{art}",
+            Visual(string art) => $"\n{art}\n",
             None => "(none)",
             _ => throw new UnreachableException($"unhandled {nameof(Answer)}: {GetType().Name}"),
         };

@@ -55,6 +55,11 @@ public record Outcome
         Submission = null;
     }
 
+    /// <summary>The submittable text, or null when there is none.</summary>
+    /// <remarks>
+    /// A failed part has nothing to submit, and neither does art or an absent
+    /// answer, so this is the one check the attaching methods need.
+    /// </remarks>
     public string? GetValue()
     {
         return AnswerResult switch
@@ -86,6 +91,10 @@ public record Outcome
         return this with { Verdict = verdict };
     }
 
+    /// <summary>
+    /// Attaches what AOC said, ignored unless there was something to submit.
+    /// </summary>
+    /// <remarks>Same shape as <see cref="WithVerdict"/>.</remarks>
     public Outcome WithSubmission(AocVerdict submission)
     {
         if (GetValue() is null)
@@ -95,6 +104,14 @@ public record Outcome
         return this with { Submission = submission };
     }
 
+    /// <summary>
+    /// The answer, then what is known about it, then how long it took.
+    /// </summary>
+    /// <remarks>
+    /// One line, except for art, which brings its own. AOC's word supersedes
+    /// the solver's, so a graded part reads as starred rather than repeating
+    /// that the solver agreed. Any ungraded reply shows beside the solver's.
+    /// </remarks>
     public override string ToString()
     {
         string message = "";
@@ -102,7 +119,8 @@ public record Outcome
         {
             AnswerResult.Ok(Answer answer) => answer.ToString(),
             // The whole chain, since the outermost message rarely names the day.
-            AnswerResult.Err(Exception exception) => $"error: {string.Join(
+            AnswerResult.Err(Exception exception) =>
+                $"error: {string.Join(
                 ": ",
                 exception.Causes().Select(cause => cause.Message)
             )}",
@@ -123,7 +141,12 @@ public record Outcome
         {
             message += $" ({notes})";
         }
-        message += $" [{Elapsed.Formatted()}]";
+        // Art ends its own line, so the timing needs no space in front of it.
+        if (!message.EndsWith('\n'))
+        {
+            message += " ";
+        }
+        message += $"[{Elapsed.Formatted()}]";
         return message;
     }
 }
