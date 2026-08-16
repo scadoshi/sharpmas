@@ -2,6 +2,37 @@
 
 Newest first.
 
+## 2026-08-15
+
+First tests. 18 of them, over `Answer` and `Outcome`, which is the display
+matrix and the invariant that an unsubmittable answer never takes a verdict.
+
+`dotnet test` had been reporting "No test is available in ...", which read like
+a wiring problem and was not. The test project had the runner, the SDK, and the
+project reference all along. That message is what xunit says when the assembly
+contains no `[Fact]`, so the fix was writing one.
+
+Two things about the tests themselves:
+
+- **`TimeSpan.Zero` beats rustmas's `notes()` helper.** That helper exists only
+  because the Rust tests use a real duration and then have to strip the timing
+  off the end before comparing. A zero duration renders as `[0ns]`, so the whole
+  line can be asserted at once and the helper is unnecessary.
+- **A single exception would not have tested `Causes` at all.** The chain test
+  nests one inside another, since the loop is only wrong in a way that shows
+  with two.
+
+Settled the `Visual` newline while the tests were being written, which is where
+todo.md predicted it would surface. Art gets a newline on both sides, not just
+in front, so the timing lands on its own line rather than reading as another row
+of the picture. rustmas leads only and is being changed to match.
+
+That left a trailing space before `[0ns]` on the art case. The first fix asked
+whether the answer was `Visual`, which works and says the wrong thing: the rule
+is "the line already ended", and `Outcome` otherwise never inspects which
+`Answer` case it holds. `if (!message.EndsWith('\n'))` is the same behaviour
+without the coupling, and stays correct if anything else ever ends in a newline.
+
 ## 2026-08-14
 
 `Outcome` is finished: `GetValue`, `WithVerdict`, `WithSubmission`, and

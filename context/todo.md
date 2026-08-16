@@ -7,7 +7,8 @@ Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
 `SolverVerdict`, and a finished `Outcome`. `Extensions/` has `Causes` on
 `Exception` and `Formatted` on `TimeSpan`, both of which exist because
 `Outcome.ToString` needed something Rust gives away. Builds clean with no
-warnings, and there are still no tests. The approach is deliberate:
+warnings, and 18 tests pass over `Answer` and `Outcome`. The approach is
+deliberate:
 the design is settled and recorded in `rustmas/context/design/`, so this is
 transliteration plus asking what the C# idiom is wherever the languages diverge.
 
@@ -17,30 +18,9 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **Write the first tests. This is the next thing.** `Sharpmas.Tests` still has
-  none against rustmas's 65, and `dotnet test` currently reports that no test is
-  available in the assembly, so the discoverer or the xunit packages need
-  sorting before anything can run. Fix that first, then port
-  `outcome.rs`'s eleven tests, which are the ones worth having: the display
-  matrix including AOC superseding the solver, and that an unsubmittable answer
-  never takes a verdict.
-
-  Port the `notes()` helper along with them. It splits the line at `" ["` so an
-  assertion compares the answer and notes without pinning a duration, which is
-  the only part of the line that varies.
-
-  What earns a test is settled in rustmas and carries over: something more than
-  one day depends on, or an error path nothing else exercises. Not the happy
-  path of a day's puzzle logic, which is what `--validate` is for, and never a
-  table of known answers as a regression guard.
-
-- **Decide the `Visual` newline.** rustmas prefixes art with a newline so it
-  starts on its own line, and has a test asserting `"\n###"`. `Answer.ToString`
-  returns it bare. Settle it while porting the display tests, since that is
-  where it will show up as a failure.
-
-- **Then `ISolution`.** The trait a day implements: parse once in the
-  constructor, then `PartOne` and `PartTwo` read the parsed result. Rust's
+- **`ISolution`. This is the next thing.** The trait a day implements: parse
+  once in the constructor, then `PartOne` and `PartTwo` read the parsed result.
+  Rust's
   `Sized` and object-safety reasoning does not carry over, since C# interfaces
   dispatch dynamically. The open question is how a day reports a bad input,
   since a constructor can only throw. A `static abstract` factory on the

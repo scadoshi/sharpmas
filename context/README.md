@@ -60,12 +60,13 @@ src/Sharpmas/            class library, the whole tool
                          SolverVerdict.cs, Outcome.cs
   Extensions/            ExceptionExtensions.cs, TimeSpanExtensions.cs
 src/Sharpmas.Cli/        console entry point, still Hello World
-tests/Sharpmas.Tests/    xunit, references the library, no tests yet
+tests/Sharpmas.Tests/    xunit, mirrors the source tree, 18 tests
 ```
 
 The address types are translated, as are both verdicts, `Answer`, and a finished
 `Outcome`. Nothing reaches the network or the disk yet, the CLI does nothing,
-and there are no tests. `todo.md` has the current state in detail.
+and only the domain types have tests. `todo.md` has the current state in
+detail.
 
 ### How it is being built
 
