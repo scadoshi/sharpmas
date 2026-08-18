@@ -4,7 +4,11 @@ Advent of Code tooling in C#. Downloads your puzzle inputs, runs your solutions,
 checks the answers against an independent solver, and submits them for stars.
 
 A rebuild of [rustmas](https://github.com/scadoshi/rustmas) in a language with
-different defaults. The tool works end to end; the solutions are barely started.
+different defaults.
+
+No solutions ship with it. Clone it, add your `.env`, and write your first day.
+scadoshi's own solutions live on the `scadoshi` branch if you want worked
+examples.
 
 ## Setup
 
@@ -199,7 +203,8 @@ src/
     Domain/                  puzzles, with no idea HTTP or files exist
       Address/               which puzzle: Year, Day, Part
       Solution/              what a puzzle produced: Answer, Outcome, ISolution
-        Year2015/Day01/      one folder per day
+        YearTemplate/Day01/  copy this to start a year
+        Year<year>/Day<NN>/  your days go here, one folder each
     Inbound/                 the CLI, and what each subcommand does
       Fetch/                 downloading
       Solve/                 running, validating, submitting, the day registry
