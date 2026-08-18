@@ -181,6 +181,14 @@ Then register it, in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
 That dictionary is the only list of what has been solved. A day missing from it
 is skipped rather than failing.
 
+Anything more than one day needs goes in `src/Sharpmas/Domain/Solution/Common/`,
+which ships empty. Grid and geometry work is what usually ends up there, since
+Advent of Code returns to it every year.
+
+Write those the second day that wants them rather than the first, and give them
+tests: a break in a shared type corrupts every day at once, where a single day's
+logic is already checked by `--validate`.
+
 Every day's type is named `Puzzle`, with the namespace carrying the coordinate,
 so two years never collide. The registry names them fully qualified for the same
 reason.
@@ -203,6 +211,7 @@ src/
     Domain/                  puzzles, with no idea HTTP or files exist
       Address/               which puzzle: Year, Day, Part
       Solution/              what a puzzle produced: Answer, Outcome, ISolution
+        Common/              helpers more than one day needs, empty to start
         YearTemplate/Day01/  copy this to start a year
         Year<year>/Day<NN>/  your days go here, one folder each
     Inbound/                 the CLI, and what each subcommand does
