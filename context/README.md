@@ -52,26 +52,26 @@ a third-party solver, submit for stars.
 
 ### Where it stands
 
+The tool is finished and works end to end. What is left is solutions.
+
 ```
 sharpmas.slnx
 src/Sharpmas/            class library, the whole tool
   Domain/Address/        Year.cs, Day.cs, Part.cs
-  Domain/Solution/       Answer.cs, AnswerResult.cs, AocVerdict.cs,
-                         SolverVerdict.cs, Outcome.cs, ISolution.cs,
-                         Solved.cs
-    Year2015/Day01/      Puzzle.cs, the first day
-  Outbound/Client/       Env.cs, SolverClient.cs, Solve.cs
-  Extensions/            ExceptionExtensions.cs, TimeSpanExtensions.cs
-src/Sharpmas.Cli/        console entry point, still Hello World
-tests/Sharpmas.Tests/    xunit, mirrors the source tree, 18 tests
+  Domain/Solution/       Answer, AnswerResult, AocVerdict, SolverVerdict,
+                         Outcome, Solved, ISolution
+    Year2015/Day01/      Puzzle.cs, the only day so far
+  Inbound/               Cli, Inputs, Fetch/, Solve/ with the day registry
+  Outbound/Client/       Environment, AocClient, SolverClient, Solver.Solve
+  Outbound/Store/        Input, Instructions, Entry, Store
+  Extensions/            Causes on Exception, Formatted on TimeSpan
+src/Sharpmas.Cli/        entry point, one line
+tests/Sharpmas.Tests/    xunit, mirrors the source tree, 49 tests
 ```
 
-The address types are translated, as are both verdicts, `Answer`, `ISolution`,
-and a finished `Outcome`. One day is written, to show the shape rather than to
-be run. The solver client is nearly finished, so the network is reachable but
-nothing calls it. Nothing dispatches or touches the disk yet, the CLI does
-nothing, and only the domain types have tests. `todo.md` has the
-current state in detail.
+`solve -y 2015 -d 1 --validate` fetches from adventofcode.com, writes the cache,
+solves, and checks both answers against the third-party solver. One dependency,
+HtmlAgilityPack, for rendering puzzle text.
 
 ### How it is being built
 

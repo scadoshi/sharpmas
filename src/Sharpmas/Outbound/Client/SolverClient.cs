@@ -21,9 +21,11 @@ public class SolverClient
 
     public SolverClient()
     {
-        UserAgent = Env.UserAgent();
+        UserAgent = Environment.UserAgent();
         HttpClient client = new();
-        client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+        // Without validation because the conventional contact string, a repo
+        // URL followed by an address, is not a legal product token.
+        client.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", UserAgent);
         Client = client;
     }
 

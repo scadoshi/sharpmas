@@ -6,6 +6,9 @@ public static class Paths
     /// <summary>The directory holding sharpmas.slnx.</summary>
     public static string Root { get; } = FindRoot();
 
+    /// <summary>Where downloaded inputs and puzzle text live.</summary>
+    public static string CacheRoot { get; } = Path.Combine(Root, "cache");
+
     /// <summary>The optional .env file. May not exist.</summary>
     public static string EnvFile { get; } = Path.Combine(Root, ".env");
 

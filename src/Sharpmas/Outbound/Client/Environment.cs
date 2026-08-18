@@ -1,10 +1,11 @@
 namespace Sharpmas.Outbound.Client;
 
 /// <summary>Environment variables, with the optional .env file folded in.</summary>
-public static class Env
+public static class Environment
 {
     const string ContactKey = "CONTACT";
     const string RepoUrlKey = "REPO_URL";
+    const string CookieKey = "COOKIE";
     const string UnconfiguredUserAgent = "sharpmas (unconfigured; set CONTACT in .env)";
 
     /// <summary>
@@ -36,24 +37,26 @@ public static class Env
             var parts = line.Split("=", 2);
             var key = parts[0].Trim();
             var value = parts[1].Trim();
-            if (Environment.GetEnvironmentVariable(key) is null)
+            if (System.Environment.GetEnvironmentVariable(key) is null)
             {
-                Environment.SetEnvironmentVariable(key, value);
+                System.Environment.SetEnvironmentVariable(key, value);
             }
         }
     }
 
     /// <summary>Loads the file once, before anything first reads a variable.</summary>
-    static Env() => LoadEnvFile();
+    static Environment() => LoadEnvFile();
 
     /// <summary>The value of `key`, or null when it is unset or blank.</summary>
     /// <remarks>
     /// Blank counts as unset, so `CONTACT=` in the shipped template means what
     /// it looks like rather than producing an empty half of a user agent.
+    /// Public so a client can read the variables only it needs, keeping the
+    /// reach of a secret visible in the layout.
     /// </remarks>
-    static string? Set(string key)
+    public static string? Get(string key)
     {
-        var value = Environment.GetEnvironmentVariable(key)?.Trim();
+        var value = System.Environment.GetEnvironmentVariable(key)?.Trim();
         return string.IsNullOrWhiteSpace(value) ? null : value;
     }
 
@@ -65,12 +68,33 @@ public static class Env
     /// </remarks>
     public static string UserAgent()
     {
-        return (Set(RepoUrlKey), Set(ContactKey)) switch
+        return (Get(RepoUrlKey), Get(ContactKey)) switch
         {
             (string repo, string contact) => $"{repo} by {contact}",
             (string repo, null) => $"{repo}",
             (null, string contact) => $"sharpmas by {contact}",
             (null, null) => UnconfiguredUserAgent,
         };
+    }
+
+    /// <summary>The session cookie, or null when it is unset or blank.</summary>
+    /// <remarks>
+    /// For callers that can work offline, where no cookie means skip the
+    /// network rather than fail. Checking which session cached input came from
+    /// needs the cookie but no requests.
+    /// </remarks>
+    public static string? CookieIfSet() => Get(CookieKey);
+
+    /// <summary>The session cookie, required.</summary>
+    /// <remarks>
+    /// For callers that cannot proceed without one, such as building a client.
+    /// The pair exists so the requirement is named here rather than at every
+    /// call site, and so a run that needs no network never asks.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when it is not set.</exception>
+    public static string Cookie()
+    {
+        return CookieIfSet()
+            ?? throw new InvalidOperationException($"{CookieKey} is not set; add it to .env");
     }
 }

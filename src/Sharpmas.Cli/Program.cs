@@ -1,1 +1,3 @@
-﻿Console.WriteLine("Hello, World!");
+using Sharpmas.Inbound;
+
+return await Cli.Run(args);

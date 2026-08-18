@@ -17,3 +17,7 @@ inputs/
 .idea/
 *.swp
 .DS_Store
+
+# Downloaded puzzle inputs and text. Personal to an account, and the site asks
+# that neither be republished.
+cache/

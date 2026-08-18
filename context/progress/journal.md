@@ -2,6 +2,91 @@
 
 Newest first.
 
+## 2026-08-18
+
+The tool is done. `solve -y 2015 -d 1 --validate` fetches from the site, writes
+the cache, solves, and checks both answers against the third-party solver. 138
+and 1771, matching rustmas.
+
+Everything left in rustmas got ported in one pass: the store, `Solver.Solve<T>`,
+`Inputs.EnsureEntry`, both commands, the day registry, and the CLI. 49 tests.
+
+### What C# made different
+
+- **`LazyAocClient` replaces `&mut Option<AocClient>`.** A `ref` parameter
+  cannot cross an `async` boundary in C#, so deferred construction needed an
+  object to live in rather than a borrow to thread through. Same behaviour: a
+  fully cached run builds no client and needs no cookie.
+- **`SolveRun.Run` rather than `run::run`.** C# forbids a member with the same
+  name as its enclosing type, `CS0542`, so `class Run { void Run() }` does not
+  compile. Same reason `Solve.cs` holds `Solver.Solve`.
+- **Article selection is an XPath.** `//article[@class='day-desc']` through
+  HtmlAgilityPack, where rustmas splits on the literal tag and then on the
+  closing one. Same rule from `references.md`, split structurally rather than
+  textually, just handed to a parser. First dependency in the project.
+- **Async spreads upward.** `ValidateAnswer` being async makes `Solve<T>`,
+  `EnsureEntry`, both runners, and `Main` async too. Rust's blocking client kept
+  that from happening there, and there is no partial adoption: one await at the
+  bottom reaches the top.
+
+### The user agent was rejected in the wild
+
+First live run died with `The format of value 'https://github.com/scadoshi/
+sharpmas by scottyfermo@hotmail.com' is invalid`. `DefaultRequestHeaders.Add`
+validates against the RFC product-token grammar, and the conventional AoC
+contact string, a repo URL followed by an address, is not one.
+`TryAddWithoutValidation` sends it unchecked, which is what both clients do now.
+
+Worth noting this was predicted and still not believed until it threw. reqwest
+does not validate, so rustmas never saw it.
+
+### Two bugs that only showed by running
+
+Both compiled clean, which is becoming the pattern for this port.
+
+- `Uri + string` is string concatenation, not URI composition, and
+  `Uri.ToString()` normalises an authority-only URI to carry a trailing slash.
+  The result was a double slash in the path. `new Uri(baseUrl, relative)`
+  composes properly.
+- Interpolating a type with no `ToString` prints the type name. `$"{day.Year}"`
+  put `Sharpmas.Domain.Address.Year` inside a request URL. `Year` and `Day` both
+  override `ToString` now, which fixes it everywhere rather than at one call
+  site, and matches rustmas relying on `Display`.
+
+### Testing
+
+49 tests, up from 18. The address types, the verdict classifier, and
+`SolverVerdict.From` came across from rustmas. Two are new here:
+
+- **The CLI parser**, since it is hand-rolled and nothing else covers it. Every
+  branch ends a run: a flag with no value, a year that is not a number, an
+  unknown option.
+- **`SolverVerdict.From` normalising any sign**, because `CompareTo` only
+  promises a sign and matching on `-1`/`0`/`1` throws on real input.
+
+The remaining gap against rustmas is entirely solution helper types that do not
+exist here yet. Those tests arrive with the types.
+
+Left `.env` parsing untested on purpose, and the reasoning is in `todo.md` so it
+does not get relitigated. Short version: it is an error path nothing else
+exercises, which normally earns a test, but it fails loudly on the very next run
+where a bad cache read fails silently and much later.
+
+### Followed the README rather than reading it
+
+Wrote the "adding a solution" steps, then actually followed them: created a
+scratch 2015 day 2 from the snippet, confirmed it compiled and registered,
+deleted it. `commit_guidelines.md` asks for this because rustmas's equivalent
+steps went stale three times, twice while someone was looking straight at them.
+
+Also added `cache/` to `.gitignore`, which had never been there. The first live
+fetch is what surfaced it.
+
+### Next
+
+Give solutions their own branch before there are many, then port the solution
+helper types. `todo.md` has the order.
+
 ## 2026-08-17 (later)
 
 `Solved` is written, and `SolverClient.ValidateAnswer` is close. `Solve<T>` is a
