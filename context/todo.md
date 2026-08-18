@@ -2,9 +2,11 @@
 
 ## Where this is
 
-The tool is finished and works end to end, live: `solve -y 2015 -d 1 --validate`
-fetches from the site, writes the cache, solves, and checks both answers against
-the third-party solver. Answers match rustmas.
+The tool is finished and works end to end, live. Two days are written: 2015 day
+1 and 2016 day 1, all four answers confirmed by the solver and matching rustmas.
+
+Solutions live on the `scadoshi` branch, per `rules/branches.md`. `main` is the
+tool, an empty `Common/`, and the day template.
 
 ```
 Domain/Address/      Year, Day, Part
@@ -35,10 +37,14 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
   down. sharpmas has only `main`, and now has a day and a registry entry sitting
   on it. Sort this before there are many.
 
-- **Port the solution helper types.** `Point`, `Cell`, `Direction`, `Turn`, and
-  their tests are the whole remaining gap against rustmas's test count, and days
-  will want them immediately. They are pure domain, so nothing about them is
-  blocked.
+- **Test `Point`. This is the next thing.** `Direction`, `Turn`, and the 2016
+  instruction parser have tests; `Point` and `Pose` do not, and `Point` is shared
+  code that every grid day will lean on. A break there corrupts every day at
+  once, which is exactly what the rule says earns a test.
+
+- **Then `Cell`.** The last of rustmas's common types, counting rows down from
+  the top where `Point` counts y upward. Nothing is blocked on it, but the first
+  grid day will want it.
 
 - **Add `Answer.Unwritten`.** rustmas grew a fourth case after `None` turned out
   to mean three different things: no answer exists, nobody has written this part

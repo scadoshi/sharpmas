@@ -2,6 +2,83 @@
 
 Newest first.
 
+## 2026-08-18 (later)
+
+2016 day 1 solved, 278 and 161, both confirmed by the solver. First day written
+in sharpmas rather than ported, and the first time every layer ran end to end
+against something with real structure.
+
+### Shared helpers
+
+`Direction`, `Turn`, and `Point` now live in `Domain/Solution/Common/`, with
+`Pose` and the instruction parser under `Year2016/`.
+
+**`Direction` and `Turn` are enums with extension classes, not record
+hierarchies.** Started as `abstract record` with nested cases and that was the
+wrong reach: the record shape earns its place when cases carry data, as
+`Answer.Value(string)` and `AocVerdict.Cooldown(string)` do. Four cases carrying
+nothing pay for the shape without using it. `new Direction.Up()` allocates on
+every turn, where an enum value is a constant that compares for free and works
+as a dictionary key without boxing. `Part` had already made this call.
+
+Two things the first attempt got wrong that are worth remembering: the `this`
+modifier is only legal on a static method in a static class, so it cannot appear
+inside a record; and `Up => Right` in a switch arm returns the *type*, not an
+instance.
+
+**Extension members cannot hold state.** `public static IReadOnlyList<Direction>
+All { get; } = [...]` is `CS9282`, because the backing field has nowhere to
+live. It has to be a computed property, which rebuilds the collection per call.
+`Part.All` had already solved this and I did not look first.
+
+**`Point` and `Pose` are `readonly record struct`.** Value equality and hashing
+come free, which is what part two needs for its `HashSet<Point>`, and nothing
+allocates per step. That is the same thing rustmas gets from deriving
+`PartialEq`, `Eq`, `Hash`, and `Copy`.
+
+C# has no saturating arithmetic, so `SaturatingMoved` widens to `long`, clamps,
+and narrows. `DistanceFromOrigin` returns `long` for the matching reason:
+`Math.Abs(int.MinValue)` throws, where widening it first does not. rustmas uses
+`unsigned_abs` to dodge the same edge.
+
+### A rationale I invented
+
+Wrote a doc comment claiming `Turn.Parse` was "deliberately narrow" and that
+accepting the full words would let a direction letter through. Scott pushed back
+and was right: `Turn` has no up or down to parse into, so the narrowness bought
+nothing.
+
+The real lesson from the `U3` bug is that a *type* which cannot represent up or
+down is what fixed it, not a parser that refuses the letters. `Turn.Parse` takes
+`l`, `left`, `r`, and `right` now, matching rustmas. The test that survives says
+the honest thing: a direction cannot become a turn because there is no case for
+it.
+
+Worth watching for. The comment sounded plausible and was reasoning backwards
+from a fix to a rationale that did not hold.
+
+### What talks to what
+
+The run that proves it:
+
+```
+Cli               parses solve -y 2016 -d 1 --validate
+  SolveRun        looks up (2016, 1), gets Solver.Solve<Puzzle>
+    Inputs        finds the cache, downloads nothing
+      Store       reads input.txt, session, part_one.md
+    Solver.Solve  T.Parse, times each part, catches into AnswerResult
+      Puzzle      Instructions -> Instruction -> Turn
+                  Pose.Turned.SaturatingMoved -> Point
+                  HashSet<Point> until a repeat
+      SolverClient  posts each answer, gets Correct
+    Outcome       answer, verdict, and timing on one line
+```
+
+### Next
+
+`Point` has no tests and is shared code, so by the rule it owes them. Then
+`Cell`, which is the last of rustmas's common types.
+
 ## 2026-08-18
 
 The tool is done. `solve -y 2015 -d 1 --validate` fetches from the site, writes
