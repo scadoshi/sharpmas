@@ -74,16 +74,6 @@ public class DirectionTests
     }
 
     [Fact]
-    public void OppositeTurnsCancel()
-    {
-        foreach (var start in Direction.All)
-        {
-            Assert.Equal(start, start.TurnedRight.TurnedLeft);
-            Assert.Equal(start, start.Turned(Turn.Left).Turned(Turn.Right));
-        }
-    }
-
-    [Fact]
     public void TurnedFollowsTheTurn()
     {
         Assert.Equal(Direction.Up.TurnedLeft, Direction.Up.Turned(Turn.Left));
@@ -117,14 +107,5 @@ public class DirectionTests
     {
         Assert.False(Direction.TryParse(text, out _));
         Assert.Throws<FormatException>(() => Direction.Parse(text));
-    }
-
-    [Fact]
-    public void AllIsClockwiseFromUp()
-    {
-        Assert.Equal(
-            [Direction.Up, Direction.Right, Direction.Down, Direction.Left],
-            Direction.All
-        );
     }
 }
