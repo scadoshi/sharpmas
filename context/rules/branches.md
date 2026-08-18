@@ -8,6 +8,16 @@ scadoshi    main plus solutions                  <- where the puzzle work happen
 `main` is what a stranger gets from `git clone`. `scadoshi` is `main` with the
 solutions added on top.
 
+### The trap when switching branches
+
+Untracked files survive a checkout, so files written on `scadoshi` are still
+sitting there after switching to `main`. A `git add -A` on `main` then commits
+them. That is how `Direction`, `Turn`, `Point`, and an instruction parser landed
+on `main` on 2026-08-18.
+
+Check `git status` before staging on `main`, and prefer naming paths over
+`add -A` when the working tree has been on the other branch.
+
 ### Keeping them in step
 
 Additive, in one direction:
