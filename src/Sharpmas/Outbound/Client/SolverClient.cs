@@ -32,43 +32,52 @@ public class SolverClient
         foreach (Uri baseUrl in BaseUrls)
         {
             var fullUrl = new Uri(baseUrl, $"solve/{day.Year}/{day.Value}/{part.WireValue}");
-
-            var content = new StringContent(input, Encoding.UTF8, "text/plain");
-            var response = await Client.PostAsync(fullUrl, content);
-            var body = (await response.Content.ReadAsStringAsync()).Trim();
-
-            if (
-                response.IsSuccessStatusCode
-                && long.TryParse(answer, out long answerLong)
-                && long.TryParse(body, out long bodyLong)
-            )
+            try
             {
-                return SolverVerdict.From(answerLong.CompareTo(bodyLong));
-            }
+                var content = new StringContent(input, Encoding.UTF8, "text/plain");
+                var response = await Client.PostAsync(fullUrl, content);
+                var body = (await response.Content.ReadAsStringAsync()).Trim();
 
-            if (response.IsSuccessStatusCode)
-            {
-                return SolverVerdict.From(answer == body);
-            }
-
-            bool isClientError = (int)response.StatusCode is >= 400 and < 500;
-            if (isClientError)
-            {
-                if (body.StartsWith("Unsupported"))
+                if (
+                    response.IsSuccessStatusCode
+                    && long.TryParse(answer, out long answerLong)
+                    && long.TryParse(body, out long bodyLong)
+                )
                 {
-                    return new SolverVerdict.Unsupported();
+                    return SolverVerdict.From(answerLong.CompareTo(bodyLong));
                 }
-                throw new InvalidOperationException(
-                    $"solver at {fullUrl} rejected the request: {body}"
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return SolverVerdict.From(answer == body);
+                }
+
+                bool isClientError = (int)response.StatusCode is >= 400 and < 500;
+                if (isClientError)
+                {
+                    if (body.StartsWith("Unsupported"))
+                    {
+                        return new SolverVerdict.Unsupported();
+                    }
+                    throw new InvalidOperationException(
+                        $"solver at {fullUrl} rejected the request: {body}"
+                    );
+                }
+
+                Console.Error.WriteLine(
+                    $"solver at {fullUrl} returned {response.StatusCode}: {body}; trying next url"
                 );
             }
-
-            Console.Error.WriteLine(
-                $"solver at {fullUrl} returned {response.StatusCode}: {body}; trying next url"
-            );
+            catch (Exception e) when (e is HttpRequestException or TaskCanceledException)
+            {
+                Console.Error.WriteLine(
+                    $"failed to reach solver at {fullUrl}: {e.Message}; trying next url"
+                );
+                continue;
+            }
         }
         throw new InvalidOperationException(
-            $"failed to check answser for year: {day.Year} and day {day.Value} via all urls"
+            $"failed to check answer for year: {day.Year} and day {day.Value} via all urls"
         );
     }
 }
