@@ -57,8 +57,10 @@ sharpmas.slnx
 src/Sharpmas/            class library, the whole tool
   Domain/Address/        Year.cs, Day.cs, Part.cs
   Domain/Solution/       Answer.cs, AnswerResult.cs, AocVerdict.cs,
-                         SolverVerdict.cs, Outcome.cs, ISolution.cs
+                         SolverVerdict.cs, Outcome.cs, ISolution.cs,
+                         Solved.cs
     Year2015/Day01/      Puzzle.cs, the first day
+  Outbound/Client/       Env.cs, SolverClient.cs, Solve.cs
   Extensions/            ExceptionExtensions.cs, TimeSpanExtensions.cs
 src/Sharpmas.Cli/        console entry point, still Hello World
 tests/Sharpmas.Tests/    xunit, mirrors the source tree, 18 tests
@@ -66,8 +68,9 @@ tests/Sharpmas.Tests/    xunit, mirrors the source tree, 18 tests
 
 The address types are translated, as are both verdicts, `Answer`, `ISolution`,
 and a finished `Outcome`. One day is written, to show the shape rather than to
-be run. Nothing dispatches, reaches the network, or touches the disk yet, the
-CLI does nothing, and only the domain types have tests. `todo.md` has the
+be run. The solver client is nearly finished, so the network is reachable but
+nothing calls it. Nothing dispatches or touches the disk yet, the CLI does
+nothing, and only the domain types have tests. `todo.md` has the
 current state in detail.
 
 ### How it is being built

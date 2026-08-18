@@ -2,6 +2,105 @@
 
 Newest first.
 
+## 2026-08-17 (later)
+
+`Solved` is written, and `SolverClient.ValidateAnswer` is close. `Solve<T>` is a
+stub in `Outbound/Client/Solve.cs` holding a signature and nothing else, because
+validating needed a client to validate against first.
+
+`Solved` is a plain class with three `required` init properties and `Total` as a
+computed property. A computed property recomputes on every read rather than
+caching, which is right here since it adds three `TimeSpan`s.
+
+### Where `required` actually belongs
+
+Got this backwards once and the compiler settled it. `required` obliges the
+*caller* to supply a value, so it cannot coexist usefully with a default:
+`new SolverClient()` with a `required` property fails `CS9035`, which means the
+initialiser can never run. Dropping `required` is what makes a default real.
+It earns its place when there is no sensible default and the compiler should
+nag, which fits `Solved` and not `SolverClient`.
+
+A related one, also confirmed rather than assumed: `required` forces the setter
+to be at least as visible as the type, so `required` with a `private init` is
+`CS9032`. There is no way to have `required` and keep the factory as the only
+door.
+
+Construction order matters with `init`. A caller using an object initialiser
+assigns *after* the constructor body has run, so a constructor that reads
+`UserAgent` to set a header would see the default rather than the override, and
+the header and the property would disagree. Get-only properties assigned in the
+constructor close that, which is what `SolverClient` does now.
+
+### Two bugs that compiled clean
+
+Both found by running the code rather than reading it, which is worth repeating.
+
+- **`Uri + string` is string concatenation, not URI composition.**
+  `Uri.ToString()` normalises an authority-only URI to carry a trailing slash,
+  so `baseUrl + "/solve/..."` produced `https://advent.fly.dev//solve/...`. The
+  relative constructor `new Uri(baseUrl, "solve/...")` composes properly.
+- **Interpolating a type with no `ToString` prints the type name.**
+  `$"{day.Year}"` gave `Sharpmas.Domain.Address.Year` inside the request URL.
+  `Year` and `Day` both override `ToString` now, which fixes it everywhere at
+  once rather than at one call site. rustmas relies on `Display` for the same
+  reason.
+
+### C# facts
+
+- **`const` is compile-time only**: primitives, `string`, enums, `null`. An
+  array cannot be one. `static readonly` is the answer, with the caveat that it
+  freezes the reference and not the contents. `ImmutableArray<T>` or
+  `FrozenSet<T>` if that matters.
+- **A member shadows a type of the same name.** A property called `UserAgent`
+  made `UserAgent.FromEnv()` resolve to the property, failing with `CS0236`
+  since a field initialiser cannot reach an instance member. Renaming the static
+  class to `Env` fixed it, and `Env` is where the session cookie will live too.
+- **URL is a subset of URI**, identifying by location. The absolute versus
+  relative distinction is separate and handled by `UriKind`. Naming follows the
+  type, so `Uri`, matching the BCL's `baseUri` and `requestUri`.
+- **Relational patterns for status ranges**: `(int)response.StatusCode is >= 400
+  and < 500`. This is where `and` earns its keep.
+- `Console.Error.WriteLine` is `eprintln!`.
+- **`using` is scoped `Drop`, made explicit.** It guarantees `Dispose` at block
+  exit including on an exception, and the narrowed scope is a consequence rather
+  than the point. `Dispose` releases what the GC does not manage or will not
+  release promptly; it is not about memory. Rust drops automatically because
+  ownership fixes the timing, and C# needs the keyword because the GC decides
+  instead.
+- **`ParseAdd` validates against the RFC grammar** for `User-Agent`. The
+  conventional AoC contact string often will not parse, and
+  `TryAddWithoutValidation` is the way around it.
+
+### `ValidateAnswer`
+
+Structure follows rustmas: read the body before classifying, since every solver
+failure is a 400 with the reason in the body and any 5xx is the hosting platform
+rather than the solver. Numeric answers compare as numbers and report a
+direction, anything else compares for equality only, because a text answer
+cannot be high or low. Parsing is `long`, not `int`: a 32-bit overflow does not
+error, it silently downgrades to the text comparison and loses the direction.
+
+The response is deliberately not wrapped in `using`. Reading the body to
+completion is what returns the connection to the pool, so what is left is a
+small managed object. Worth adding back if anything ever stops reading the full
+body or starts making many calls.
+
+### Next
+
+Finish `ValidateAnswer`, then `Solve<T>`.
+
+1. **Transport failures still escape the loop.** `HttpRequestException` from the
+   post, and `TaskCanceledException` from a timeout, both propagate instead of
+   trying the next host, which is most of the reason three hosts are listed. The
+   shape: grab `StatusCode` and the body inside a `try`, classify outside, and
+   `continue` from the catch. Note that `IsSuccessStatusCode` goes out of scope
+   with the response, so success becomes `(int)status is >= 200 and < 300`.
+2. There is a typo in the final throw: "answser".
+3. Then `Solve<T>`: `T.Parse`, time the parse and each part separately, catch
+   per part into `AnswerResult`, and let a parse failure fly. The stub in
+   `Solve.cs` takes an `HttpClient` and should take a `SolverClient`.
+
 ## 2026-08-17
 
 `ISolution` is written, and 2015 day 1 implements it so the shape can be seen

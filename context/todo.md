@@ -4,10 +4,11 @@
 
 Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
 `Part`. `Domain/Solution/` has `Answer`, `AnswerResult`, `AocVerdict`,
-`SolverVerdict`, `ISolution`, and a finished `Outcome`. `Year2015/Day01/` is the
-first day and exists to show the shape rather than to be run, since nothing
-dispatches yet. `Extensions/` has `Causes` on `Exception` and `Formatted` on
-`TimeSpan`, both of which exist because `Outcome.ToString` needed something Rust
+`SolverVerdict`, `ISolution`, `Solved`, and a finished `Outcome`.
+`Year2015/Day01/` is the first day and exists to show the shape rather than to
+be run, since nothing dispatches yet. `Outbound/Client/` has `Env`, a nearly
+finished `SolverClient`, and a `Solve` stub. `Extensions/` has `Causes` on
+`Exception` and `Formatted` on `TimeSpan`, both of which exist because `Outcome.ToString` needed something Rust
 gives away. Builds clean with no warnings, and 18 tests pass over `Answer` and
 `Outcome`. The approach is deliberate: the design is settled and recorded in
 `rustmas/context/design/`, so this is transliteration plus asking what the C#
@@ -19,9 +20,15 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **`Solve<T>`. This is the next thing.** The generic that calls `T.Parse(input)`,
-  times the parse and each part separately, and builds a `Solved` holding two
-  `Outcome`s. Three rules, all settled:
+- **Finish `SolverClient.ValidateAnswer`. This is the next thing.** It follows
+  rustmas and is nearly done. What is left: transport failures escape the loop,
+  so `HttpRequestException` and `TaskCanceledException` both need catching with
+  a `continue`, which is the only reason three base URLs exist. The journal entry
+  for 2026-08-17 (later) has the shape.
+
+- **Then `Solve<T>`.** The generic that calls `T.Parse(input)`, times the parse
+  and each part separately, and builds a `Solved` holding two `Outcome`s. Three
+  rules, all settled:
 
   - A parse failure is not caught here. It ends the day and the runner reports
     it, matching rustmas where `S::new(input)?` propagates out.
@@ -32,7 +39,9 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
   `T.Parse` is reachable only from inside a generic constrained on
   `ISolution<T>`, since a static member has nothing to dispatch on. That
-  constraint is the whole reason `Solve<T>` is generic.
+  constraint is the whole reason `Solve<T>` is generic. The stub in
+  `Outbound/Client/Solve.cs` takes an `HttpClient` and should take a
+  `SolverClient`.
 
 - **Then the registry.** rustmas hand-wrote one line per day because Rust has no
   runtime reflection. C# has it, so reflection over `ISolution<>` or a source
