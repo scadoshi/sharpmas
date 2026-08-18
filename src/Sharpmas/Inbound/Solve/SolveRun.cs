@@ -22,6 +22,7 @@ public static class SolveRun
     /// </remarks>
     static readonly Dictionary<(int Year, int Day), Solver> Solvers = new()
     {
+        [(2015, 1)] = Outbound.Client.Solver.Solve<Domain.Solution.Year2015.Day01.Puzzle>,
     };
 
     /// <summary>The solver for a day, or null when nobody has written one.</summary>
