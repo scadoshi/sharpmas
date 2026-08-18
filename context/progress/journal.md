@@ -74,10 +74,33 @@ Cli               parses solve -y 2016 -d 1 --validate
     Outcome       answer, verdict, and timing on one line
 ```
 
+### Tests, and a gap it found in rustmas
+
+`Point` and `Pose` now mirror rustmas's, minus the two `checked_moved` cases,
+since that method was not ported: nothing in either repo's days calls it.
+
+Two extras kept, both C# specific rather than better testing:
+
+- **`SamePlaceMeansEqual`.** Rust derives `Hash` and `Eq`, and removing the
+  derive is a compile error at the `HashSet` call site. C# has no such check:
+  changing `readonly record struct` to `class` still compiles and part two
+  silently stops detecting repeats. The test stands where Rust has the compiler.
+- **`MovingAnEnormousDistanceClamps`.** rustmas calls `saturating_add`, which is
+  stdlib. C# has none, so `SaturatingMoved` widens to `long` and clamps by hand,
+  and hand-rolled arithmetic near the `int` edges earns a test that a stdlib call
+  does not.
+
+Six others were written and then removed for only restating coverage the
+mirrored cases already give.
+
+Writing `Direction`'s tests from scratch, since there was nothing to translate,
+showed that **rustmas had none for it either** while `Point`, `Cell`, and `Turn`
+all did. Ported back there the same day.
+
 ### Next
 
-`Point` has no tests and is shared code, so by the rule it owes them. Then
-`Cell`, which is the last of rustmas's common types.
+`Cell`, the last of rustmas's common types, counting rows down from the top
+where `Point` counts y upward.
 
 ## 2026-08-18
 

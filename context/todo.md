@@ -37,12 +37,7 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
   down. sharpmas has only `main`, and now has a day and a registry entry sitting
   on it. Sort this before there are many.
 
-- **Test `Point`. This is the next thing.** `Direction`, `Turn`, and the 2016
-  instruction parser have tests; `Point` and `Pose` do not, and `Point` is shared
-  code that every grid day will lean on. A break there corrupts every day at
-  once, which is exactly what the rule says earns a test.
-
-- **Then `Cell`.** The last of rustmas's common types, counting rows down from
+- **`Cell`. This is the next thing.** The last of rustmas's common types, counting rows down from
   the top where `Point` counts y upward. Nothing is blocked on it, but the first
   grid day will want it.
 
