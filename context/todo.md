@@ -37,9 +37,17 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
   down. sharpmas has only `main`, and now has a day and a registry entry sitting
   on it. Sort this before there are many.
 
-- **`Cell`. This is the next thing.** The last of rustmas's common types, counting rows down from
-  the top where `Point` counts y upward. Nothing is blocked on it, but the first
-  grid day will want it.
+- **The rest of `Common/`. Scott is porting these himself**, so leave them alone
+  unless asked. `Cell` is the one left from rustmas, counting rows down from the
+  top where `Point` counts y upward. Nothing is blocked on it, but the first grid
+  day will want it.
+
+  The pattern the finished three set: payload-free sets are enums with an
+  extension class rather than record hierarchies, positions are
+  `readonly record struct` for free equality and no allocation per step, and
+  parsing follows the BCL convention where `Parse` throws and `TryParse` returns
+  a bool. Tests mirror rustmas unless C# genuinely needs more, which so far has
+  meant guarding what Rust's compiler guarantees and C#'s does not.
 
 - **Add `Answer.Unwritten`.** rustmas grew a fourth case after `None` turned out
   to mean three different things: no answer exists, nobody has written this part
