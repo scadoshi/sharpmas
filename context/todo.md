@@ -4,13 +4,14 @@
 
 Translating rustmas file by file. `Domain/Address/` has `Year`, `Day`, and
 `Part`. `Domain/Solution/` has `Answer`, `AnswerResult`, `AocVerdict`,
-`SolverVerdict`, and a finished `Outcome`. `Extensions/` has `Causes` on
-`Exception` and `Formatted` on `TimeSpan`, both of which exist because
-`Outcome.ToString` needed something Rust gives away. Builds clean with no
-warnings, and 18 tests pass over `Answer` and `Outcome`. The approach is
-deliberate:
-the design is settled and recorded in `rustmas/context/design/`, so this is
-transliteration plus asking what the C# idiom is wherever the languages diverge.
+`SolverVerdict`, `ISolution`, and a finished `Outcome`. `Year2015/Day01/` is the
+first day and exists to show the shape rather than to be run, since nothing
+dispatches yet. `Extensions/` has `Causes` on `Exception` and `Formatted` on
+`TimeSpan`, both of which exist because `Outcome.ToString` needed something Rust
+gives away. Builds clean with no warnings, and 18 tests pass over `Answer` and
+`Outcome`. The approach is deliberate: the design is settled and recorded in
+`rustmas/context/design/`, so this is transliteration plus asking what the C#
+idiom is wherever the languages diverge.
 
 Where rustmas already answered something, the notes below say so. Those are not
 settled by authority, they are settled by having been tried, sometimes twice.
@@ -18,14 +19,34 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **`ISolution`. This is the next thing.** The trait a day implements: parse
-  once in the constructor, then `PartOne` and `PartTwo` read the parsed result.
-  Rust's
-  `Sized` and object-safety reasoning does not carry over, since C# interfaces
-  dispatch dynamically. The open question is how a day reports a bad input,
-  since a constructor can only throw. A `static abstract` factory on the
-  interface is the C# analogue of `fn new(input) -> Result<Self>`, and it stays
-  dispatchable from generic code.
+- **`Solve<T>`. This is the next thing.** The generic that calls `T.Parse(input)`,
+  times the parse and each part separately, and builds a `Solved` holding two
+  `Outcome`s. Three rules, all settled:
+
+  - A parse failure is not caught here. It ends the day and the runner reports
+    it, matching rustmas where `S::new(input)?` propagates out.
+  - Each part is caught separately into `AnswerResult`, so one broken part does
+    not hide the other's answer.
+  - Validation runs after both parts are timed, so no duration includes a
+    network round trip, and only a submittable answer is checked at all.
+
+  `T.Parse` is reachable only from inside a generic constrained on
+  `ISolution<T>`, since a static member has nothing to dispatch on. That
+  constraint is the whole reason `Solve<T>` is generic.
+
+- **Then the registry.** rustmas hand-wrote one line per day because Rust has no
+  runtime reflection. C# has it, so reflection over `ISolution<>` or a source
+  generator are both available. Two things it must do besides dispatch: count
+  how many parts a run would submit, and answer whether a day exists without
+  holding its input, so an unwritten day is skipped before anything downloads.
+
+  Note the wrinkle: every day is a `Puzzle` in its own namespace, so this file
+  cannot `using` them all and will name them qualified.
+
+- **Give solutions their own branch.** `branches.md` in rustmas has the rule and
+  both repos are meant to follow it: `main` is the tool, a personal branch adds
+  solutions, and changes flow one way by merging `main` down. sharpmas has only
+  `main`, and now has a day sitting on it. Sort this before there are many.
 
 - **Add `Answer.Unwritten`.** rustmas grew a fourth case after `None` turned out
   to mean three different things: no answer exists, nobody has written this part
@@ -51,11 +72,6 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
   and `--day` as filters, plus `--validate`, `--submit`, and a confirmation
   skip. Note the collision rustmas hit: `-y` is taken by `--year`, so the
   confirmation skip has no short flag.
-- Decide how a day registers itself. Rust hand-wrote a registry because it has
-  no runtime reflection. C# has it. Two things the registry must do besides
-  dispatch: count how many parts a run would submit, and answer whether a day
-  exists without holding its input, so an unwritten day is skipped before
-  anything downloads.
 
 ## Soon
 

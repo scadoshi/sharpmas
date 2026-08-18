@@ -2,6 +2,93 @@
 
 Newest first.
 
+## 2026-08-17
+
+`ISolution` is written, and 2015 day 1 implements it so the shape can be seen
+against a real day rather than argued about.
+
+```csharp
+public interface ISolution<TSelf> where TSelf : ISolution<TSelf>
+{
+    static abstract TSelf Parse(string input);
+    Answer PartOne();
+    Answer PartTwo();
+}
+```
+
+The self-referencing type parameter is C# hand-rolling what Rust has built in.
+Every Rust trait is implicitly parameterised by the implementing type, so
+`S::new(input)` inside a generic just works. C# interfaces have no `Self`, so
+the type has to be passed to its own interface. The pattern is called CRTP if it
+needs looking up.
+
+`static abstract` is the pair that makes it work, and both halves are
+load-bearing. `abstract` says the implementer supplies the body, which is
+redundant on instance members but not here, since interfaces are allowed static
+members that already have one. `static` says no instance is needed, which is the
+point: a day cannot produce itself from an instance of itself.
+
+The consequence is that `Parse` is unreachable through an interface reference,
+because a static member has nothing to dispatch on. It can only be called as
+`T.Parse(input)` from inside a generic constrained on `ISolution<T>`. That is
+exactly where `Solve<T>` will call it, which is the same place rustmas calls
+`S::new`.
+
+### How failure travels
+
+Three places, three mechanisms, settled after mistaking them for one:
+
+- A day reports a bad input by **throwing**. A constructor cannot return
+  failure, and this is what C# exceptions are for.
+- `Solve<T>` catches each part separately into **`AnswerResult`**, so one broken
+  part does not hide the other's answer.
+- A failure from `Parse` is **not caught** by `Solve<T>` at all. It ends the day
+  and the runner reports it, which is what rustmas does: `S::new(input)?`
+  propagates and `run.rs` prints that the day failed.
+
+Nearly built a `SolutionResult` to mirror `AnswerResult` before noticing they
+answer different questions. `AnswerResult` exists because two parts must fail
+independently and a settled outcome has to be *stored* for printing. Parsing has
+one caller which immediately gives up, so a result type there would be built to
+be unwrapped on the next line.
+
+Worth keeping straight: throwing is how C# propagates, a closed union is how it
+stores. Rust uses one type for both and that is what made the distinction easy
+to miss.
+
+### C# facts
+
+- **`required` forces the setter to be at least as visible as the type.**
+  Confirmed by compiling it: `required` with a `private init` is CS9032. So
+  `required` necessarily means callers can bypass the factory and build the type
+  by object initialiser. Fine for day 1, where the raw input is the whole state.
+  Any day that parses into fields wants a private constructor instead, so
+  `Parse` is the only door.
+- **`Aggregate` is `fold`.** With a seed it matches; without one it uses the
+  first element and throws on an empty sequence. Nothing in LINQ short-circuits,
+  so there is no `try_fold` and an early return stays a loop.
+- **`string` is already `IEnumerable<char>`.** `ToCharArray()` allocates a copy
+  for nothing.
+- `Index()` yields `(index, item)` pairs, which is `enumerate()`.
+
+### Layout
+
+`Domain/Solution/Year2015/Day01/Puzzle.cs`, with the namespace mirroring the
+path, so every day has its own `Puzzle` exactly as rustmas has one per module.
+The registry will have to name them qualified, since it cannot import several
+namespaces that all define `Puzzle`. Nothing else imports a day, so the cost
+stops there. C# has no `pub(super)`, so day-local helpers get `internal`, which
+is the whole assembly rather than the day.
+
+Caught one bug worth naming, since rustmas made the same one on 2016 day 1.
+Part two returned the final floor when the basement was never reached, which is
+part one's answer wearing part two's hat. It returns `Answer.None` now.
+
+### Next
+
+`Solve<T>`: call `T.Parse`, time the parse and each part separately, catch per
+part into `AnswerResult`, and let a parse failure fly. Then the registry.
+
 ## 2026-08-15
 
 First tests. 18 of them, over `Answer` and `Outcome`, which is the display
