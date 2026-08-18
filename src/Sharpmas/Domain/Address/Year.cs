@@ -68,4 +68,9 @@ public sealed class Year
             return now.Year - 1;
         }
     }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
 }

@@ -62,4 +62,9 @@ public sealed class Day
                     .Select(d => new Day(y, d))
             );
     }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
 }
