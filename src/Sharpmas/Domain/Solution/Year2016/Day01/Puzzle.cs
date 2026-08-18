@@ -1,40 +1,58 @@
+using Sharpmas.Domain.Solution.Common;
+
 namespace Sharpmas.Domain.Solution.Year2016.Day01;
 
-/// <summary>A day, ready to be filled in. Copy the folder, rename the namespace.</summary>
-/// <remarks>
-/// Compiled on every build but never registered, so copying it starts from
-/// something that cannot have drifted from <see cref="ISolution{TSelf}"/>. A
-/// template that only lives in a README goes stale without anyone noticing.
-///
-/// See the repo README for the two steps: write the day, then add a line to
-/// <c>Solvers</c> in <c>Inbound/Solve/SolveRun.cs</c>.
-/// </remarks>
+/// <summary>2016 day 1: walk the instructions, then measure the walk.</summary>
 public class Puzzle : ISolution<Puzzle>
 {
-    /// <summary>
-    /// Parsed state. Hold whatever both parts read, not the raw text, once a day
-    /// needs more than a string.
-    /// </summary>
-    public required string Input { get; init; }
+    /// <summary>Parsed here, so a bad input fails before either part runs.</summary>
+    readonly Instructions instructions;
 
-    /// <summary>Parses once, so both parts are reads over the result.</summary>
+    Puzzle(Instructions instructions)
+    {
+        this.instructions = instructions;
+    }
+
+    public static Puzzle Parse(string input) => new(Instructions.Parse(input));
+
+    /// <summary>How far the end of the walk is from where it started.</summary>
+    public Answer PartOne()
+    {
+        var pose = Pose.Start;
+        foreach (var instruction in instructions)
+        {
+            pose = pose.Turned(instruction.Turn).SaturatingMoved(instruction.Distance);
+        }
+        return Answer.Solved(pose.Position.DistanceFromOrigin().ToString());
+    }
+
+    /// <summary>How far the first place visited twice is from the start.</summary>
     /// <remarks>
-    /// Throw when the input will not parse. That ends this day and leaves the
-    /// others alone, which is why it is not caught anywhere below.
+    /// Walks a block at a time rather than a segment at a time, since a repeat
+    /// can happen part way along one. The position is checked before stepping,
+    /// so each segment's endpoint is tested at the start of the next one rather
+    /// than being skipped or counted twice.
     /// </remarks>
-    public static Puzzle Parse(string input) => new() { Input = input.Trim() };
+    public Answer PartTwo()
+    {
+        var pose = Pose.Start;
+        var visited = new HashSet<Point>();
 
-    /// <summary>
-    /// <see cref="Answer.Solved"/> for something submittable,
-    /// <see cref="Answer.Visual"/> for art you read yourself,
-    /// <see cref="Answer.None"/> when there is genuinely no answer.
-    /// </summary>
-    /// <remarks>
-    /// Throwing means the day is broken, which is not the same as having no
-    /// answer. It stops this part only; the other still runs.
-    /// </remarks>
-    public Answer PartOne() => new Answer.None();
+        foreach (var instruction in instructions)
+        {
+            pose = pose.Turned(instruction.Turn);
+            for (var step = 0; step < instruction.Distance; step++)
+            {
+                if (!visited.Add(pose.Position))
+                {
+                    return Answer.Solved(pose.Position.DistanceFromOrigin().ToString());
+                }
+                pose = pose.SaturatingMoved(1);
+            }
+        }
 
-    /// <summary>Same contract as <see cref="PartOne"/>. Day 25 has no second puzzle.</summary>
-    public Answer PartTwo() => new Answer.None();
+        // Nothing repeated. Returning the final distance here would be part
+        // one's answer wearing part two's hat.
+        return new Answer.None();
+    }
 }
