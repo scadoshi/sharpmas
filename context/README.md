@@ -4,10 +4,8 @@ Hand this dir to any AI assistant to work on `sharpmas` with full context.
 
 ## Where things are
 
-- [`todo.md`](todo.md) is what is coming next. Read it first.
-- [`progress/journal.md`](progress/journal.md) is dated session logs, newest
-  first. The latest entry lists the C# facts learned so far, which is worth
-  skimming before answering a language question.
+- `todo.md` and `progress/journal.md` are the owner's working notes and live on
+  the `scadoshi` branch rather than here.
 - [`rules/commit_guidelines.md`](rules/commit_guidelines.md) is binding for any
   commit.
 - [`rules/doc_comments.md`](rules/doc_comments.md) is binding for any doc
