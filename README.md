@@ -6,9 +6,9 @@ checks the answers against an independent solver, and submits them for stars.
 A rebuild of [rustmas](https://github.com/scadoshi/rustmas) in a language with
 different defaults.
 
-No solutions ship with it. Clone it, add your `.env`, and write your first day.
-scadoshi's own solutions live on the `scadoshi` branch if you want worked
-examples.
+This is scadoshi's working branch, with his solutions attached. The `main`
+branch is the same tool with no solutions, which is the one to clone if you want
+a starting point.
 
 ## Setup
 
@@ -181,6 +181,10 @@ Then register it, in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
 That dictionary is the only list of what has been solved. A day missing from it
 is skipped rather than failing.
 
+Anything more than one day needs goes in `Domain/Solution/Common/`. That folder
+is on this branch rather than `main`, since a clone with no solutions has
+nothing to use it for.
+
 Every day's type is named `Puzzle`, with the namespace carrying the coordinate,
 so two years never collide. The registry names them fully qualified for the same
 reason.
@@ -203,8 +207,9 @@ src/
     Domain/                  puzzles, with no idea HTTP or files exist
       Address/               which puzzle: Year, Day, Part
       Solution/              what a puzzle produced: Answer, Outcome, ISolution
+        Common/              helpers days share, once more than one wants them
         YearTemplate/Day01/  copy this to start a year
-        Year<year>/Day<NN>/  your days go here, one folder each
+        Year2015/Day01/      one folder per day
     Inbound/                 the CLI, and what each subcommand does
       Fetch/                 downloading
       Solve/                 running, validating, submitting, the day registry
