@@ -35,9 +35,6 @@ public class Puzzle : ISolution<Puzzle>
                 return Answer.Solved((i + 1).ToString());
             }
         }
-        // The floor never reached the basement, which is not the same as
-        // reaching it at the end. Returning the final floor would be part one's
-        // answer wearing part two's hat.
         return new Answer.None();
     }
 }
