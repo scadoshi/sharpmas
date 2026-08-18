@@ -37,15 +37,18 @@ not here.
 Only on `scadoshi`:
 
 - `Domain/Solution/Year*/`, the days themselves
-- `Domain/Solution/Common/`, the helpers days share
+- the contents of `Domain/Solution/Common/`, but not the folder itself. `main`
+  ships the folder and a note saying what earns a place in it, so a fresh clone
+  has somewhere to put shared helpers
 - the entries in `Solvers` in `Inbound/Solve/SolveRun.cs`
 
 Not `YearTemplate/`, which is tooling for writing solutions rather than a
 solution, and which a fresh clone of `main` should have. It is compiled on every
 build so it cannot drift from `ISolution`.
 
-`Common/` is deliberately not on `main`. It holds grid and direction helpers that
-exist to serve puzzles, so a clone with no solutions has nothing to use them for,
-and the template is meant to stand alone.
+`Common/` ships empty on `main`: the folder and its note are scaffolding, the
+types inside are solution code. Write one the second day that wants it rather
+than the first, and give it tests, since a break there corrupts every day at
+once.
 
 On `main`, and therefore on both: everything else, including `context/`.
