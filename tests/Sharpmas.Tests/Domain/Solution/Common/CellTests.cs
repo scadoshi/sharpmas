@@ -4,10 +4,7 @@ namespace Sharpmas.Tests.Domain.Solution.Common;
 
 public class CellTests
 {
-    /// <summary>
-    /// Up decreases the row, since a grid counts down from the top left. That is
-    /// the whole reason this type is separate from <see cref="Point"/>.
-    /// </summary>
+    /// <summary>Up decreases the row: a grid counts down from the top left.</summary>
     [Fact]
     public void MovesOneStepEachWay()
     {
@@ -15,15 +12,16 @@ public class CellTests
         Assert.Equal(new(0, 1), Cell.Origin.SaturatingMoved(Direction.Right, 1));
         Assert.Equal(Cell.Origin, new Cell(1, 0).SaturatingMoved(Direction.Up, 1));
         Assert.Equal(new(1, 0), Cell.Origin.SaturatingMoved(Direction.Down, 1));
+
+        Assert.Equal(Cell.Origin, new Cell(0, 1).CheckedMoved(Direction.Left, 1));
+        Assert.Equal(new(0, 1), Cell.Origin.CheckedMoved(Direction.Right, 1));
+        Assert.Equal(Cell.Origin, new Cell(1, 0).CheckedMoved(Direction.Up, 1));
+        Assert.Equal(new(1, 0), Cell.Origin.CheckedMoved(Direction.Down, 1));
     }
 
-    /// <summary>
-    /// Clamps rather than wrapping, at both ends. The floor is the one that
-    /// bites: unsigned subtraction wraps silently, so moving up from row zero
-    /// once landed on uint.MaxValue rather than staying put.
-    /// </summary>
+    /// <summary>Both ends clamp. The floor matters most: unsigned subtraction wraps.</summary>
     [Fact]
-    public void MovingPastTheEdgeClamps()
+    public void SaturatingMovedPastTheEdgeClamps()
     {
         Assert.Equal(uint.MinValue, Cell.Origin.SaturatingMoved(Direction.Left, 1).Column);
         Assert.Equal(
@@ -37,11 +35,16 @@ public class CellTests
         );
     }
 
-    /// <summary>
-    /// A grid walk records where it has been in a set, so two cells at the same
-    /// index have to be equal and hash alike. C# will not complain if the record
-    /// struct becomes a class and this quietly stops holding.
-    /// </summary>
+    [Fact]
+    public void CheckedMovedPastTheEdgeReturnsNull()
+    {
+        Assert.Null(Cell.Origin.CheckedMoved(Direction.Left, 1));
+        Assert.Null(new Cell(0, uint.MaxValue).CheckedMoved(Direction.Right, 1));
+        Assert.Null(Cell.Origin.CheckedMoved(Direction.Up, 1));
+        Assert.Null(new Cell(uint.MaxValue, 0).CheckedMoved(Direction.Down, 1));
+    }
+
+    /// <summary>Guards the value equality a HashSet walk depends on.</summary>
     [Fact]
     public void SamePlaceMeansEqual()
     {
