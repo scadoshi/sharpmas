@@ -25,10 +25,10 @@ commit in history is broken.
 
 ### Committing across both branches
 
-Not yet in force: sharpmas has only `main`. Once solutions get their own branch,
-the rule is the one in `rustmas/context/rules/branches.md`. Tool changes land on
-`main` first, then merge down, and the work happens in a worktree rather than by
-switching branches:
+Tool changes land on `main` first, then merge down. See
+[`branches.md`](branches.md) for what belongs where. The work happens in a
+worktree rather than by switching branches, which also avoids the trap of
+untracked files following a checkout:
 
 ```sh
 git worktree add /tmp/wt main
