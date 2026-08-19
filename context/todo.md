@@ -31,11 +31,19 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **Give solutions their own branch. This is the next thing.** `branches.md` in
-  rustmas has the rule and both repos are meant to follow it: `main` is the tool,
-  a personal branch adds solutions, and changes flow one way by merging `main`
-  down. sharpmas has only `main`, and now has a day and a registry entry sitting
-  on it. Sort this before there are many.
+- **Finish `IntExtensions`. This is the next thing.** A stub is sitting
+  uncommitted at `Domain/Solution/Common/IntExtensions.cs`. The plan:
+  `CheckedAdd(int rhs)` returning `int?`, widen to `long` and range-check, plus
+  `CheckedSub` as its own method since `CheckedAdd(-rhs)` breaks when `rhs` is
+  `int.MinValue`. The stub needs a namespace, loses the stray semicolon after
+  the extension block, and `CheckedValue` becomes `CheckedAdd`. Tests as
+  theories at `tests/.../Common/IntExtensionsTests.cs`; the case that proves
+  `CheckedSub` earns its keep is `0.CheckedSub(int.MinValue)`, which is null
+  because the true result is one past `int.MaxValue`.
+
+  `Cell` cannot use these, since it needs the `uint` range; its private helper
+  stays. The consumers are `Point.CheckedMoved`, if built, and days doing raw
+  arithmetic.
 
 - **The rest of `Common/`. Scott is porting these himself**, so leave them alone
   unless asked. `Cell` is the one left from rustmas, counting rows down from the
