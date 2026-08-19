@@ -91,10 +91,7 @@ public class StoreTests : IDisposable
         Assert.Null(Cache.ReadEntryIn(root, day)!.Instructions.PartTwo);
     }
 
-    /// <summary>
-    /// A blank file is a half-written one, so it reads as absent and gets
-    /// fetched again rather than counting as content.
-    /// </summary>
+    /// <summary>A blank file is half-written, so it reads as absent.</summary>
     [Fact]
     public void BlankPartTwoReadsAsMissing()
     {

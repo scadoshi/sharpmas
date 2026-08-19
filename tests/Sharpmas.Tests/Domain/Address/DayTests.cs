@@ -67,10 +67,7 @@ public class DayTests
         Assert.Single(Day.Each(2015, 1));
     }
 
-    /// <summary>
-    /// A day-only filter skips years that never had that day rather than
-    /// failing, since 2025 stopped at twelve.
-    /// </summary>
+    /// <summary>A day-only filter skips years that never had that day.</summary>
     [Fact]
     public void EachSkipsYearsWithoutThatDay()
     {

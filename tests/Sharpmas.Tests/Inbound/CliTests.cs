@@ -2,11 +2,7 @@ using Sharpmas.Inbound;
 
 namespace Sharpmas.Tests.Inbound;
 
-/// <summary>
-/// The parser is hand-rolled rather than pulled from a package, so nothing else
-/// covers these branches. Every error path here ends a run, so each one is worth
-/// pinning.
-/// </summary>
+/// <summary>Hand-rolled parser, so nothing else covers these branches.</summary>
 public class CliTests
 {
     [Fact]
@@ -47,10 +43,7 @@ public class CliTests
         Assert.True(options.Yes);
     }
 
-    /// <summary>
-    /// A missing value would otherwise read the next flag as the number, or
-    /// default silently to a year nobody asked for.
-    /// </summary>
+    /// <summary>A missing value must not read the next flag as its number.</summary>
     [Fact]
     public void RejectsAFlagWithNoValue()
     {
