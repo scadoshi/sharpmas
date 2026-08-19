@@ -16,7 +16,7 @@ Update `todo.md` and add a journal entry at the end of a working session.
 
 ## Who
 
-scadoshi (Scott) is a strong Rust developer, deep on ownership, traits,
+scadoshi (Scotty) is a strong Rust developer, deep on ownership, traits,
 error-as-values, and making illegal states unrepresentable.
 
 C# is the language being learned here, deliberately. He knows general
