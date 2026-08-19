@@ -2,18 +2,18 @@
 
 ```
 main        the tool, no solutions, no helpers   <- default, what people clone
-scadoshi    main plus solutions                  <- where the puzzle work happens
+<yours>     main plus your solutions             <- where the puzzle work happens
 ```
 
-`main` is what a stranger gets from `git clone`. `scadoshi` is `main` with the
-solutions added on top.
+`main` is what a stranger gets from `git clone`. Your branch is `main` with the
+solutions added on top. The owner's is called `scadoshi`; name yours whatever
+you like and read that name wherever this file says it.
 
 ### The trap when switching branches
 
-Untracked files survive a checkout, so files written on `scadoshi` are still
-sitting there after switching to `main`. A `git add -A` on `main` then commits
-them. That is how `Direction`, `Turn`, `Point`, and an instruction parser landed
-on `main` on 2026-08-18.
+Untracked files survive a checkout, so files written on the solutions branch are
+still sitting there after switching to `main`. A `git add -A` on `main` then
+commits them, which has happened here more than once.
 
 Check `git status` before staging on `main`, and prefer naming paths over
 `add -A` when the working tree has been on the other branch.
@@ -23,7 +23,7 @@ Check `git status` before staging on `main`, and prefer naming paths over
 Additive, in one direction:
 
 ```sh
-git checkout scadoshi
+git checkout <yours>
 git merge main
 ```
 
@@ -33,7 +33,7 @@ to produce a branch, so there is no drift to catch and no force push.
 Check what a merge did before trusting it:
 
 ```sh
-git diff main scadoshi --name-status
+git diff main <yours> --name-status
 ```
 
 It should list the solutions as added and nothing as removed. If the solutions
@@ -44,7 +44,7 @@ not here.
 
 ### What belongs where
 
-Only on `scadoshi`:
+Only on the solutions branch:
 
 - `Domain/Solution/Year*/`, the days themselves
 - the contents of `Domain/Solution/Common/`, but not the folder itself. `main`

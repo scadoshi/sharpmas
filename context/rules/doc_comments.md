@@ -37,21 +37,20 @@ If the extra sentence only restates the signature in prose, cut it.
 - No repeating a parent's doc on every case of a hierarchy. Say it once on the
   base record.
 - No history. Describe the code as it is, never how it got there. "Used to be a
-  class", "this used to throw" belong in the journal. A reader arriving cold
-  needs to know what the code does now.
+  class", "this used to throw" belong in a commit message or working notes. A
+  reader arriving cold needs to know what the code does now.
 
 `<summary>` on one line is fine and preferred. The three-line expanded form is
 tooling default, not a requirement.
 
 ### Where the long-form goes instead
 
-- `context/progress/journal.md` for what happened and when, including every C#
-  fact learned the hard way.
+- your own working notes for what happened and when.
 - `rustmas/context/design/` for why the design has its shape. Most decisions
   were settled there, so link rather than restate.
 - `rustmas/context/references.md` for the two service contracts.
 
-A doc comment growing into an essay is usually a journal entry trying to escape.
+A doc comment growing into an essay is usually a design note trying to escape.
 
 ### Tests
 

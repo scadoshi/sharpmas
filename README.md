@@ -6,9 +6,9 @@ checks the answers against an independent solver, and submits them for stars.
 A rebuild of [rustmas](https://github.com/scadoshi/rustmas) in a language with
 different defaults.
 
-This is scadoshi's working branch, with his solutions attached. The `main`
-branch is the same tool with no solutions, which is the one to clone if you want
-a starting point.
+This is Scott's working branch, with his solutions attached. The `main` branch
+is the same tool with no solutions, which is the one to clone if you want a
+starting point.
 
 ## Setup
 
