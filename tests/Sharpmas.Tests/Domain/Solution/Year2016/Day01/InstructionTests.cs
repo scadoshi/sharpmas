@@ -1,7 +1,7 @@
-namespace Sharpmas.Tests.Domain.Solution.Year2016.Day01;
-
 using Sharpmas.Domain.Solution.Common;
 using Sharpmas.Domain.Solution.Year2016.Day01;
+
+namespace Sharpmas.Tests.Domain.Solution.Year2016.Day01;
 
 public class InstructionTests
 {

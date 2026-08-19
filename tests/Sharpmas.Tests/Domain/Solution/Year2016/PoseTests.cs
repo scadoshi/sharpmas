@@ -1,7 +1,7 @@
-namespace Sharpmas.Tests.Domain.Solution.Year2016;
-
 using Sharpmas.Domain.Solution.Common;
 using Sharpmas.Domain.Solution.Year2016;
+
+namespace Sharpmas.Tests.Domain.Solution.Year2016;
 
 public class PoseTests
 {

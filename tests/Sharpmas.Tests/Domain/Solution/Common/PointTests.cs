@@ -1,6 +1,6 @@
-namespace Sharpmas.Tests.Domain.Solution.Common;
-
 using Sharpmas.Domain.Solution.Common;
+
+namespace Sharpmas.Tests.Domain.Solution.Common;
 
 public class PointTests
 {
