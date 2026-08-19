@@ -104,13 +104,20 @@ Timings never include the network.
 
 ## Going deeper
 
-- [`context/README.md`](context/README.md) covers the architecture, the layout,
-  the two service contracts, and every design decision in brief.
-- [`context/rules/`](context/rules/) holds the working rules: commit
-  guidelines, doc comment style, and the branch model.
-- [rustmas](https://github.com/scadoshi/rustmas) is the original this rebuilds;
-  its `context/design/` and `references.md` carry the full reasoning and the
-  service contracts as verified.
+`context/` holds the facts about the repo, one file per topic:
+
+- [`context/architecture.md`](context/architecture.md), the layout, how a solve
+  runs, and the cache on disk.
+- [`context/services.md`](context/services.md), the two services and the
+  etiquette the tool follows.
+- [`context/design.md`](context/design.md), every design decision in a line or
+  two each.
+- [`context/rules/`](context/rules/), the working rules: commits, doc comments,
+  and the branch model.
+
+[rustmas](https://github.com/scadoshi/rustmas) is the original this rebuilds;
+its `context/design/` and `references.md` carry the full reasoning and the
+service contracts as verified.
 
 ## License
 
