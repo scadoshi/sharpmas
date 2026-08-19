@@ -24,10 +24,10 @@ public readonly record struct Point(int X, int Y)
     public Point SaturatingMoved(Direction direction, int distance) =>
         direction switch
         {
-            Direction.Left => this with { X = Saturating((long)X - distance) },
-            Direction.Right => this with { X = Saturating((long)X + distance) },
-            Direction.Down => this with { Y = Saturating((long)Y - distance) },
-            Direction.Up => this with { Y = Saturating((long)Y + distance) },
+            Direction.Left => this with { X = int.CreateSaturating((long)X - distance) },
+            Direction.Right => this with { X = int.CreateSaturating((long)X + distance) },
+            Direction.Down => this with { Y = int.CreateSaturating((long)Y - distance) },
+            Direction.Up => this with { Y = int.CreateSaturating((long)Y + distance) },
             _ => this,
         };
 
@@ -37,6 +37,4 @@ public readonly record struct Point(int X, int Y)
     /// negating int.MinValue overflows where widening it does not.
     /// </remarks>
     public long DistanceFromOrigin() => Math.Abs((long)X) + Math.Abs((long)Y);
-
-    static int Saturating(long value) => (int)Math.Clamp(value, int.MinValue, int.MaxValue);
 }

@@ -22,20 +22,56 @@ public record struct Cell(uint Row, uint Column)
     public Cell SaturatingMoved(Direction direction, uint distance) =>
         direction switch
         {
-            Direction.Left => this with { Column = Saturating((long)Column - distance) },
-            Direction.Right => this with { Column = Saturating((long)Column + distance) },
-            Direction.Up => this with { Row = Saturating((long)Row - distance) },
-            Direction.Down => this with { Row = Saturating((long)Row + distance) },
+            Direction.Left => this with { Column = uint.CreateSaturating((long)Column - distance) },
+            Direction.Right => this with
+            {
+                Column = uint.CreateSaturating((long)Column + distance),
+            },
+            Direction.Up => this with { Row = uint.CreateSaturating((long)Row - distance) },
+            Direction.Down => this with { Row = uint.CreateSaturating((long)Row + distance) },
             _ => this,
         };
 
-    /// <summary>Brings a widened result back into range, clamping at both ends.</summary>
+    /// <summary>Moves a distance in a direction, or null if that leaves the grid.</summary>
     /// <remarks>
-    /// Signed, not <c>ulong</c>. Unsigned subtraction wraps silently rather than
-    /// throwing, so moving left from column zero would land on
-    /// <see cref="uint.MaxValue"/> with nothing to clamp against. A
-    /// <see cref="long"/> holds every <see cref="uint"/> with 32 bits to spare,
-    /// so neither a sum nor a difference of two can leave it.
+    /// Clamping suits a walk with no edges; null suits a grid, where leaving it
+    /// is the caller's decision rather than a position to carry on from.
     /// </remarks>
-    static uint Saturating(long value) => (uint)Math.Clamp(value, uint.MinValue, uint.MaxValue);
+    public Cell? CheckedMoved(Direction direction, uint distance) =>
+        direction switch
+        {
+            Direction.Left => Checked((long)Column - distance) is uint moved
+                ? this with
+                {
+                    Column = moved,
+                }
+                : null,
+            Direction.Right => Checked((long)Column + distance) is uint moved
+                ? this with
+                {
+                    Column = moved,
+                }
+                : null,
+            Direction.Up => Checked((long)Row - distance) is uint moved
+                ? this with
+                {
+                    Row = moved,
+                }
+                : null,
+            Direction.Down => Checked((long)Row + distance) is uint moved
+                ? this with
+                {
+                    Row = moved,
+                }
+                : null,
+            _ => this,
+        };
+
+    /// <summary>A widened result narrowed back down, or null if it will not fit.</summary>
+    /// <remarks>
+    /// A comparison rather than a <c>checked</c> block: hitting an edge is
+    /// ordinary here, and throwing costs a stack walk on a hot path.
+    /// </remarks>
+    static uint? Checked(long value) =>
+        (value >= uint.MinValue && value <= uint.MaxValue) ? (uint)value : null;
 }
