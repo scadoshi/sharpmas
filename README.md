@@ -3,122 +3,73 @@
 Advent of Code tooling in C#. Downloads your puzzle inputs, runs your solutions,
 checks the answers against an independent solver, and submits them for stars.
 
-A rebuild of [rustmas](https://github.com/scadoshi/rustmas) in a language with
-different defaults.
-
-This is Scott's working branch, with his solutions attached. The `main` branch
+This is Scotty's working branch, with his solutions attached. The `main` branch
 is the same tool with no solutions, which is the one to clone if you want a
 starting point.
 
-## Setup
+## Quick start
 
-You need your Advent of Code session cookie. Log in at
-[adventofcode.com](https://adventofcode.com), open your browser dev tools, and
-copy the value of the cookie named `session`.
+**1. Add your session cookie.** Log in at
+[adventofcode.com](https://adventofcode.com), copy the value of the cookie named
+`session` from your browser's dev tools, then:
 
-Copy [`.env.template`](.env.template) to `.env` and fill it in:
-
-```
-COOKIE=<your session cookie>
-CONTACT=<an address AOC can reach you at>
-REPO_URL=<your fork, if you forked>
+```sh
+cp .env.template .env    # paste the cookie into COOKIE=
 ```
 
-Only `COOKIE` is required, and it belongs to your account, so `.env` is
-gitignored. `CONTACT` and `REPO_URL` shape the `User-Agent`, because the site
-asks automated clients to be reachable. Neither has a default that names anyone,
-so leaving them blank identifies the tool and nobody else.
+Only `COOKIE` is required. `CONTACT` and `REPO_URL` shape the `User-Agent`,
+since the site asks automated clients to be reachable.
 
-`.env` is read from the repo root, found by walking up from the running assembly
-until the `.slnx` turns up. An already-exported variable beats the file, so a
-one-off override on the command line works.
-
-## Running it
-
-One binary, one subcommand per mode.
-
-```
-dotnet run --project src/Sharpmas.Cli -- solve -y 2015 -d 1
-dotnet run --project src/Sharpmas.Cli -- fetch -y 2015 -d 1
-```
-
-The `--` is required: without it `dotnet run` reads the flags as its own.
-
-Worth an alias while you are working on it:
+**2. Run something.** One binary, one subcommand per mode, and the `--` matters:
+without it `dotnet run` eats the flags as its own.
 
 ```sh
 alias sharpmas='dotnet run --project src/Sharpmas.Cli --'
-sharpmas solve -y 2015 -d 1
-```
 
-Debug builds are slow enough to notice on anything that brute forces, so
-`--configuration Release` is worth reaching for once a day takes longer than you
-want to sit through. It goes before the `--`:
-
-```
-dotnet run --project src/Sharpmas.Cli --configuration Release -- solve -y 2015 -d 1
-```
-
-## fetch
-
-Downloads puzzle inputs and instructions into `cache/<year>/<NN>/`.
-
-```
-sharpmas fetch                 # everything
-sharpmas fetch -y 2015         # one year
-sharpmas fetch -d 1            # day 1 of every year
-sharpmas fetch -y 2015 -d 1    # one puzzle
-```
-
-| Flag | Meaning |
-| --- | --- |
-| `-y`, `--year` | Only this year. Omit for all. |
-| `-d`, `--day` | Only this day. Omit for all. |
-
-Both flags are filters rather than a lookup, so omitting one means all of them.
-
-Re-running is safe. Inputs never change, so a cached one is never fetched again;
-Advent of Code asks that you not re-download. Instructions are different, since
-part two stays locked until part one is solved. A day cached without
-`part_two.md` is incomplete rather than finished, so `fetch` asks for it again on
-every run until it arrives.
-
-## solve
-
-Runs your solutions, with the same filters.
-
-```
-sharpmas solve -y 2015 -d 1              # offline
-sharpmas solve -y 2015 -d 1 --validate   # check the answers
+sharpmas fetch -y 2015 -d 1              # download one puzzle into cache/
+sharpmas solve -y 2015 -d 1              # run your solution offline
+sharpmas solve -y 2015 -d 1 --validate   # check answers against the solver
 sharpmas solve -y 2015 -d 1 --submit     # check, then send for stars
 ```
 
-| Flag | Meaning |
-| --- | --- |
-| `-y`, `--year` | Only this year. Omit for all. |
-| `-d`, `--day` | Only this day. Omit for all. |
-| `-v`, `--validate` | Check each answer against a third-party solver, one request per part. |
-| `-s`, `--submit` | Submit to Advent of Code. Implies `--validate`. |
-| `--yes` | Skip the confirmation prompt on an unfiltered `--submit`. |
+`-y` and `-d` are filters: omit either for all of them. `--submit` validates
+first and only sends what the solver agrees with, because wrong answers cost an
+escalating cooldown. Unfiltered submits ask before posting everything; `--yes`
+skips that.
 
-Solving reads inputs from disk and downloads what is missing. With no cookie set
-it stays entirely offline. With one set, a day still waiting on part two costs a
-request to see whether it has unlocked. `--validate` needs no cookie either,
-since the third-party solver has no accounts.
+**3. Write a day.** Say 2015 day 1. Copy the template, which is compiled on
+every build and so cannot drift:
 
-`--submit` always validates first and only sends what the solver agrees with,
-because a wrong answer to Advent of Code earns a cooldown that escalates with
-repeats. If the solver has no implementation for that puzzle, which happens
-during a live event, the answer is submitted anyway and flagged as unchecked.
+```sh
+cp -r src/Sharpmas/Domain/Solution/YearTemplate src/Sharpmas/Domain/Solution/Year2015
+```
 
-A new star on part one unlocks part two, so `--submit` fetches its text before
-the run finishes rather than leaving it for next time.
+Fix the namespace in the copied `Day01/Puzzle.cs` to match the path:
 
-Run `--submit` with no year or day and it would post every solved part, so it
-prints the count and asks first. `--yes` skips that. There is no short flag for
-it on purpose, since `-y` is `--year` and this one is worth typing out.
+```csharp
+namespace Sharpmas.Domain.Solution.Year2015.Day01;
+```
 
-### Reading the output
+Write the parts. `Parse` runs once and throws on bad input; each part returns
+`Answer.Solved(value)`, `Answer.Visual(art)`, or `Answer.None()`:
+
+```csharp
+public Answer PartOne() => Answer.Solved(Input.Length.ToString());
+```
+
+Register it in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
+
+```csharp
+[(2015, 1)] = Outbound.Client.Solver.Solve<Domain.Solution.Year2015.Day01.Puzzle>,
+```
+
+That dictionary is the only list of what has been solved. Then:
+
+```sh
+sharpmas solve -y 2015 -d 1 --validate
+```
+
+## Reading the output
 
 ```
 year 2015 day 1 in 950.7µs (35.5µs parsing)
@@ -126,11 +77,8 @@ year 2015 day 1 in 950.7µs (35.5µs parsing)
   part two: 1771 (correct) [384.3µs]
 ```
 
-Until a day has a solution, `solve` skips it. Asking for one by name says so
-rather than printing nothing.
-
-Each part is one line: the answer, then whatever is known about it, then how long
-it took. Timings cover parsing and solving only, never the network.
+One line per part: the answer, what is known about it, and how long it took.
+Timings never include the network.
 
 | Note | Meaning |
 | --- | --- |
@@ -140,97 +88,29 @@ it took. Timings cover parsing and solving only, never the network.
 | `new star` | Advent of Code just accepted it |
 | `starred` | Advent of Code says the part was already solved |
 | `unsupported` | The solver has no implementation for this puzzle |
-| `rate limited, 1m 0s left to wait` | Advent of Code refused to grade, wait it out |
+| `rate limited, 1m 0s left to wait` | Advent of Code refused to grade |
 | `(none)` | The part has no answer, such as day 25 part two |
 | `error: ...` | The part failed. The other part still ran |
 
-Advent of Code grades each part exactly once, so a part solved earlier reports
-`starred` rather than confirming the answer again.
+## Worth knowing
 
-## Adding a solution
+- Re-running `fetch` is safe: inputs are never re-downloaded, and a day still
+  waiting on part two is rechecked until it unlocks.
+- With no cookie set, `solve` works entirely offline from the cache, and
+  `--validate` still works, since the solver needs no account.
+- Shared helpers more than one day needs go in `Domain/Solution/Common/`.
+- Debug builds are slow on brute-force days;
+  `dotnet run --project src/Sharpmas.Cli -c Release -- solve ...` when it drags.
 
-Three steps. Say you are writing 2015 day 2.
+## Going deeper
 
-Copy the template, which is compiled on every build and so cannot drift from the
-interface:
-
-```sh
-cp -r src/Sharpmas/Domain/Solution/YearTemplate \
-      src/Sharpmas/Domain/Solution/Year2015
-```
-
-That gives you `Year2015/Day01/Puzzle.cs` with both parts stubbed. Rename the
-folder to the day you want, and change the namespace to match the path:
-
-```csharp
-namespace Sharpmas.Domain.Solution.Year2015.Day02;
-```
-
-Write the parts:
-
-```csharp
-public Answer PartOne() => Answer.Solved(Input.Length.ToString());
-```
-
-Then register it, in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
-
-```csharp
-[(2015, 2)] = Outbound.Client.Solver.Solve<Domain.Solution.Year2015.Day02.Puzzle>,
-```
-
-That dictionary is the only list of what has been solved. A day missing from it
-is skipped rather than failing.
-
-Anything more than one day needs goes in `src/Sharpmas/Domain/Solution/Common/`,
-which ships empty on `main`. Grid and geometry work is what usually ends up
-there, since Advent of Code returns to it every year.
-
-Write those the second day that wants them rather than the first, and give them
-tests: a break in a shared type corrupts every day at once, where a single day's
-logic is already checked by `--validate`.
-
-Every day's type is named `Puzzle`, with the namespace carrying the coordinate,
-so two years never collide. The registry names them fully qualified for the same
-reason.
-
-`Parse` runs once so both parts read the result, and throws if the input will
-not parse, which ends that day without touching the others. Parts return
-`Answer.Solved(value)` for something submittable, `Answer.Visual(art)` for a grid
-you read yourself, and `Answer.None()` when there is genuinely no answer, such as
-day 25 part two. A part that throws is caught and reported on its own line, so
-the other part still runs.
-
-Returning art rather than printing it keeps solving free of IO.
-
-## Layout
-
-```
-src/
-  Sharpmas.Cli/              entry point, one line
-  Sharpmas/
-    Domain/                  puzzles, with no idea HTTP or files exist
-      Address/               which puzzle: Year, Day, Part
-      Solution/              what a puzzle produced: Answer, Outcome, ISolution
-        Common/              helpers days share, once more than one wants them
-        YearTemplate/Day01/  copy this to start a year
-        Year2015/Day01/      one folder per day
-    Inbound/                 the CLI, and what each subcommand does
-      Fetch/                 downloading
-      Solve/                 running, validating, submitting, the day registry
-    Outbound/                the world outside
-      Client/                the two services, and the environment they read
-      Store/                 the cache on disk
-    Extensions/              small helpers on BCL types
-tests/Sharpmas.Tests/        mirrors the source tree
-```
-
-The domain knows nothing about HTTP, the filesystem, or the command line, which
-is what keeps a puzzle testable without any of them.
-
-## Start here
-
-[`context/`](context/) covers what this is, how to work on it, and which rustmas
-decisions were settled for good reasons versus which ones C# gets to reopen.
+- [`context/README.md`](context/README.md) covers the architecture, the layout,
+  the two service contracts, and every design decision in brief.
+- [`context/rules/`](context/rules/) holds the working rules: commit
+  guidelines, doc comment style, and the branch model.
+- [rustmas](https://github.com/scadoshi/rustmas) is the original this rebuilds;
+  its `context/design/` and `references.md` carry the full reasoning and the
+  service contracts as verified.
 
 ## License
 

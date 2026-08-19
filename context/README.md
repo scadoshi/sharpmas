@@ -121,7 +121,7 @@ cooldown after wrong answers.
 `main` is the tool, with no solutions: what you clone to start. Solutions and a
 day registry entry per solved day live on a personal branch layered on top, with
 changes flowing one way by merging `main` down. `rules/branches.md` has the
-model. The `scadoshi` branch is Scott's, with his solutions and working notes,
+model. The `scadoshi` branch is Scotty's, with his solutions and working notes,
 if you want worked examples.
 
 ## Do not
