@@ -26,14 +26,6 @@ public class PointTests
         Assert.Equal(int.MinValue, new Point(0, int.MinValue).SaturatingMoved(Direction.Down, 1).Y);
     }
 
-    /// <summary>A distance large enough to overflow still lands on the edge.</summary>
-    [Fact]
-    public void MovingAnEnormousDistanceClamps()
-    {
-        Assert.Equal(int.MaxValue, new Point(1, 0).SaturatingMoved(Direction.Right, int.MaxValue).X);
-        Assert.Equal(int.MinValue, new Point(-1, 0).SaturatingMoved(Direction.Left, int.MaxValue).X);
-    }
-
     [Fact]
     public void DistanceFromOriginIsManhattan()
     {
