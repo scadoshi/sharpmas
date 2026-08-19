@@ -11,8 +11,8 @@
 ### Check before committing, not after
 
 `dotnet test`, then `dotnet build` read for warnings. A warning here is worth
-treating as a failure: several of the bugs recorded in the journal compiled
-clean, and the ones that did warn said exactly what was wrong.
+treating as a failure: several bugs in this repo's history compiled clean, and
+the ones that did warn said exactly what was wrong.
 
 If a change touches instructions, follow them rather than reading them. In
 rustmas the README's "adding a solution" steps went stale three times, twice

@@ -7,8 +7,7 @@ A rebuild of [rustmas](https://github.com/scadoshi/rustmas) in a language with
 different defaults.
 
 No solutions ship with it. Clone it, add your `.env`, and write your first day.
-scadoshi's own solutions live on the `scadoshi` branch if you want worked
-examples.
+Scott's own solutions live on the `scadoshi` branch if you want worked examples.
 
 ## Setup
 
