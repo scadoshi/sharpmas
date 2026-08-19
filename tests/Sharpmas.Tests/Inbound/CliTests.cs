@@ -1,6 +1,6 @@
-namespace Sharpmas.Tests.Inbound;
-
 using Sharpmas.Inbound;
+
+namespace Sharpmas.Tests.Inbound;
 
 /// <summary>
 /// The parser is hand-rolled rather than pulled from a package, so nothing else

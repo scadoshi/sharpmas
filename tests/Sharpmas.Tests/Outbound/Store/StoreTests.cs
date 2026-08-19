@@ -1,8 +1,11 @@
-namespace Sharpmas.Tests.Outbound.Store;
-
 using Sharpmas.Domain.Address;
 using Sharpmas.Outbound.Store;
-using Store = Sharpmas.Outbound.Store.Store;
+
+// Aliased because this test namespace ends in Store, and outside a namespace
+// declaration the namespace name wins over a plain type of the same name.
+using Cache = Sharpmas.Outbound.Store.Store;
+
+namespace Sharpmas.Tests.Outbound.Store;
 
 public class InputTests
 {
@@ -61,10 +64,10 @@ public class StoreTests : IDisposable
     [Fact]
     public void RoundTrips()
     {
-        Assert.Null(Store.ReadEntryIn(root, day));
+        Assert.Null(Cache.ReadEntryIn(root, day));
 
-        Store.WriteEntryIn(root, day, Entry("cookie"));
-        var read = Store.ReadEntryIn(root, day);
+        Cache.WriteEntryIn(root, day, Entry("cookie"));
+        var read = Cache.ReadEntryIn(root, day);
 
         Assert.NotNull(read);
         Assert.Equal("()()", read.Input.Data);
@@ -77,15 +80,15 @@ public class StoreTests : IDisposable
     [Fact]
     public void PadsTheDay()
     {
-        Store.WriteEntryIn(root, day, Entry("cookie"));
+        Cache.WriteEntryIn(root, day, Entry("cookie"));
         Assert.True(Directory.Exists(Path.Combine(root, "2015", "01")));
     }
 
     [Fact]
     public void MissingPartTwoReadsAsNull()
     {
-        Store.WriteEntryIn(root, day, Entry("cookie", partTwo: null));
-        Assert.Null(Store.ReadEntryIn(root, day)!.Instructions.PartTwo);
+        Cache.WriteEntryIn(root, day, Entry("cookie", partTwo: null));
+        Assert.Null(Cache.ReadEntryIn(root, day)!.Instructions.PartTwo);
     }
 
     /// <summary>
@@ -95,18 +98,18 @@ public class StoreTests : IDisposable
     [Fact]
     public void BlankPartTwoReadsAsMissing()
     {
-        Store.WriteEntryIn(root, day, Entry("cookie"));
+        Cache.WriteEntryIn(root, day, Entry("cookie"));
         File.WriteAllText(Path.Combine(root, "2015", "01", "part_two.md"), "  \n");
-        Assert.Null(Store.ReadEntryIn(root, day)!.Instructions.PartTwo);
+        Assert.Null(Cache.ReadEntryIn(root, day)!.Instructions.PartTwo);
     }
 
     /// <summary>An input nothing can vouch for is one to fetch again.</summary>
     [Fact]
     public void EntryWithoutASessionReadsAsMissing()
     {
-        Store.WriteEntryIn(root, day, Entry("cookie"));
+        Cache.WriteEntryIn(root, day, Entry("cookie"));
         File.Delete(Path.Combine(root, "2015", "01", "session"));
-        Assert.Null(Store.ReadEntryIn(root, day));
+        Assert.Null(Cache.ReadEntryIn(root, day));
     }
 
     [Fact]
@@ -116,6 +119,6 @@ public class StoreTests : IDisposable
         var path = Path.Combine(root, "in-the-way");
         File.WriteAllText(path, "");
 
-        Assert.Throws<InvalidOperationException>(() => Store.EnsureDir(path));
+        Assert.Throws<InvalidOperationException>(() => Cache.EnsureDir(path));
     }
 }

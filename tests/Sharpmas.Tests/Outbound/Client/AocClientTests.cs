@@ -1,7 +1,7 @@
-namespace Sharpmas.Tests.Outbound.Client;
-
 using Sharpmas.Domain.Solution;
 using Sharpmas.Outbound.Client;
+
+namespace Sharpmas.Tests.Outbound.Client;
 
 public class VerdictFromTests
 {

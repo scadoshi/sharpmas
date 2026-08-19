@@ -1,6 +1,6 @@
-namespace Sharpmas.Tests.Domain.Address;
-
 using Sharpmas.Domain.Address;
+
+namespace Sharpmas.Tests.Domain.Address;
 
 public class YearTests
 {
