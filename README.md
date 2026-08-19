@@ -111,8 +111,6 @@ Timings never include the network.
   etiquette the tool follows.
 - [`context/design.md`](context/design.md), every design decision in a line or
   two each.
-- [`context/rules/`](context/rules/), the working rules: commits, doc comments,
-  and the branch model.
 
 [rustmas](https://github.com/scadoshi/rustmas) is the original this rebuilds;
 its `context/design/` and `references.md` carry the full reasoning and the

@@ -8,8 +8,6 @@ explains the repo and assumes nothing about who you are.
 - [`services.md`](services.md) is the two services the tool talks to and the
   etiquette it follows.
 - [`design.md`](design.md) is every design decision in a line or two each.
-- [`rules/`](rules/) is binding when working here: commit guidelines, doc
-  comment style, and the branch model.
 
 The repo README covers getting started. [rustmas](https://github.com/scadoshi/rustmas)
 is the original this rebuilds; its `context/design/` and `references.md` hold
@@ -19,9 +17,8 @@ the full reasoning and the service contracts as verified.
 
 `main` is the tool with no solutions: what you clone to start. Solutions and
 their registry entries live on a personal branch layered on top, with changes
-flowing one way by merging `main` down. `rules/branches.md` has the model. The
-`scadoshi` branch is Scotty's, with his solutions and working notes, if you
-want worked examples.
+flowing one way by merging `main` down. The `scadoshi` branch is Scotty's, with
+his solutions and working notes, if you want worked examples.
 
 ## Do not
 
