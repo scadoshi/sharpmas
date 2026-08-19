@@ -1,8 +1,8 @@
-namespace Sharpmas.Outbound.Client;
-
 using System.Text;
 using Sharpmas.Domain.Address;
 using Sharpmas.Domain.Solution;
+
+namespace Sharpmas.Outbound.Client;
 
 public class SolverClient
 {

@@ -1,6 +1,6 @@
-namespace Sharpmas.Tests.Domain.Solution;
-
 using Sharpmas.Domain.Solution;
+
+namespace Sharpmas.Tests.Domain.Solution;
 
 public class AnswerTests
 {

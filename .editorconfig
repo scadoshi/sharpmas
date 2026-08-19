@@ -1,0 +1,11 @@
+root = true
+
+[*.cs]
+# usings above the file-scoped namespace, which is the .NET default and what
+# new file templates produce. A warning rather than a suggestion, so the build
+# says so rather than leaving it to whoever notices.
+csharp_using_directive_placement = outside_namespace:warning
+
+# System first, then the rest, each group alphabetical.
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
