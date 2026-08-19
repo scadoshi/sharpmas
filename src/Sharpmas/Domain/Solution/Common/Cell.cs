@@ -4,7 +4,7 @@ namespace Sharpmas.Domain.Solution.Common;
 /// <remarks>
 /// So <c>Up</c> decreases the row, the opposite of <see cref="Point"/>, which is
 /// what to use for signed coordinates on an unbounded plane. Picking the wrong
-/// one of the two walks a puzzle perfectly and lands somewhere upside down.
+/// one flips the vertical axis, so a correct walk gives a wrong answer.
 ///
 /// A record struct, so two cells at the same index are equal and hash alike
 /// without any of it being written by hand.

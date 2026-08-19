@@ -50,7 +50,6 @@ public static class TurnExtensions
         }
 
         /// <summary>Reads a turn, failing rather than defaulting.</summary>
-        /// <exception cref="FormatException">Thrown when the text names no turn.</exception>
         public static Turn Parse(string value) =>
             Turn.TryParse(value, out var turn)
                 ? turn

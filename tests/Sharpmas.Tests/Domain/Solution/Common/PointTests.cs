@@ -13,10 +13,7 @@ public class PointTests
         Assert.Equal(new Point(0, -1), Point.Origin.SaturatingMoved(Direction.Down, 1));
     }
 
-    /// <summary>
-    /// Clamps rather than wrapping. Wrapping would turn a walk that ran off the
-    /// number line into a plausible wrong answer instead of an obvious one.
-    /// </summary>
+    /// <summary>Clamping keeps a runaway walk from wrapping into a plausible answer.</summary>
     [Fact]
     public void MovingPastTheEdgeClamps()
     {
@@ -34,10 +31,7 @@ public class PointTests
         Assert.Equal(7, new Point(-3, -4).DistanceFromOrigin());
     }
 
-    /// <summary>
-    /// Math.Abs(int.MinValue) throws, and two int magnitudes can sum past int,
-    /// which is why this returns a long.
-    /// </summary>
+    /// <summary>Math.Abs(int.MinValue) throws, and two magnitudes can sum past int.</summary>
     [Fact]
     public void DistanceFromOriginSurvivesTheExtremes()
     {
@@ -45,10 +39,7 @@ public class PointTests
         Assert.Equal(4_294_967_296, new Point(int.MinValue, int.MinValue).DistanceFromOrigin());
     }
 
-    /// <summary>
-    /// Part two of 2016 day 1 records where it has been in a HashSet, so two
-    /// points at the same place have to be equal and hash alike.
-    /// </summary>
+    /// <summary>Guards the value equality a HashSet walk depends on.</summary>
     [Fact]
     public void SamePlaceMeansEqual()
     {

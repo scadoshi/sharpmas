@@ -54,9 +54,7 @@ public class VerdictFromTests
 
 public class SolverVerdictTests
 {
-    /// <summary>
-    /// Read from our side, so a negative comparison means ours was the low one.
-    /// </summary>
+    /// <summary>Read from our side: negative means ours was the low one.</summary>
     [Fact]
     public void OrderingReadsFromOurSide()
     {
@@ -65,10 +63,7 @@ public class SolverVerdictTests
         Assert.IsType<SolverVerdict.High>(SolverVerdict.From(1));
     }
 
-    /// <summary>
-    /// A comparison only promises a sign, never a particular value, so anything
-    /// negative has to read as low.
-    /// </summary>
+    /// <summary>CompareTo promises a sign, never a particular value.</summary>
     [Fact]
     public void NormalisesAnySign()
     {

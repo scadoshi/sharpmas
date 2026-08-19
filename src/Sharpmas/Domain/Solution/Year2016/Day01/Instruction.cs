@@ -11,10 +11,6 @@ namespace Sharpmas.Domain.Solution.Year2016.Day01;
 internal sealed record Instruction(Turn Turn, int Distance)
 {
     /// <summary>Reads one instruction, failing rather than defaulting.</summary>
-    /// <exception cref="FormatException">
-    /// Thrown when the text is empty, does not start with a turn, or has no
-    /// number after it.
-    /// </exception>
     public static Instruction Parse(string value)
     {
         var text = value.Trim();
@@ -55,7 +51,6 @@ internal sealed class Instructions : IReadOnlyList<Instruction>
     }
 
     /// <summary>Reads every instruction, trimming the spaces after each comma.</summary>
-    /// <exception cref="FormatException">Thrown when any one of them will not parse.</exception>
     public static Instructions Parse(string value) =>
         new([.. value.Trim().Split(',').Select(Instruction.Parse)]);
 

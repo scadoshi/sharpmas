@@ -96,9 +96,6 @@ public static class Store
     }
 
     /// <summary>Creates a directory and its parents, refusing to clobber a file.</summary>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when the path exists and is not a directory.
-    /// </exception>
     public static void EnsureDir(string path)
     {
         if (Directory.Exists(path))

@@ -12,9 +12,7 @@ public class InstructionTests
         Assert.Equal(new Instruction(Turn.Left, 347), Instruction.Parse("L347"));
     }
 
-    /// <summary>
-    /// Back when the letter was a direction, this parsed and walked three.
-    /// </summary>
+    /// <summary>U3 read as a direction would turn nowhere and walk three.</summary>
     [Theory]
     [InlineData("U3")]
     [InlineData("D3")]

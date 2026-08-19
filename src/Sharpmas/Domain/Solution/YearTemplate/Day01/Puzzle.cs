@@ -11,10 +11,7 @@ namespace Sharpmas.Domain.Solution.YearTemplate.Day01;
 /// </remarks>
 public class Puzzle : ISolution<Puzzle>
 {
-    /// <summary>
-    /// Parsed state. Hold whatever both parts read, not the raw text, once a day
-    /// needs more than a string.
-    /// </summary>
+    /// <summary>Parsed state. Hold what both parts read, not the raw text.</summary>
     public required string Input { get; init; }
 
     /// <summary>Parses once, so both parts are reads over the result.</summary>

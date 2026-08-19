@@ -53,7 +53,6 @@ public class AocClient
     /// markup rather than on prose means no phrase has to be matched and no flag
     /// can disagree with the text beside it.
     /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown when the page has no puzzle text.</exception>
     public async Task<(string One, string? Two)> GetInstructions(Day day)
     {
         var url = new Uri(AocBaseUrl, $"{day.Year}/day/{day.Value}");

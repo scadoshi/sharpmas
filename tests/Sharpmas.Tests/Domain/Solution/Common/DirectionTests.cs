@@ -22,11 +22,7 @@ public class TurnTests
         Assert.Equal(expected, Turn.Parse(text));
     }
 
-    /// <summary>
-    /// A direction cannot become a turn, which is the reason this type is
-    /// separate: an instruction like U3 read as a direction turns nowhere and
-    /// walks three.
-    /// </summary>
+    /// <summary>A direction is not a turn: U3 must not turn nowhere and walk three.</summary>
     [Theory]
     [InlineData("u")]
     [InlineData("up")]

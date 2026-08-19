@@ -27,7 +27,6 @@ public static class Cli
         """;
 
     /// <summary>Parses the arguments and runs whichever subcommand was given.</summary>
-    /// <returns>The process exit code.</returns>
     public static async Task<int> Run(string[] args)
     {
         if (args.Length == 0 || args[0] is "-h" or "--help")
@@ -84,7 +83,6 @@ public static class Cli
     /// <summary>Every flag a subcommand might take, whether or not it uses them.</summary>
     internal record Options(int? Year, int? Day, bool Validate, bool Submit, bool Yes);
 
-    /// <exception cref="ArgumentException">Thrown on an unknown or malformed flag.</exception>
     internal static Options Parse(string[] args)
     {
         int? year = null;

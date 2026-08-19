@@ -46,10 +46,7 @@ public class PoseTests
         Assert.Equal(5, pose.Position.DistanceFromOrigin());
     }
 
-    /// <summary>
-    /// Four equal sides with a turn between each draws a square, which catches
-    /// an ordering mistake in the turns that single steps can miss.
-    /// </summary>
+    /// <summary>Drawing a square catches turn mistakes single steps miss.</summary>
     [Fact]
     public void FourRightTurnsReturnToTheStart()
     {

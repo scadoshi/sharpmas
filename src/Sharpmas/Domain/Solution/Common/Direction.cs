@@ -96,7 +96,6 @@ public static class DirectionExtensions
         }
 
         /// <summary>Reads a direction, failing rather than defaulting.</summary>
-        /// <exception cref="FormatException">Thrown when the text names no direction.</exception>
         public static Direction Parse(string value) =>
             Direction.TryParse(value, out var direction)
                 ? direction

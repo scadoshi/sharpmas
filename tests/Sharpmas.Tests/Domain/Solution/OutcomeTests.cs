@@ -66,10 +66,7 @@ public class OutcomeTests
         Assert.Equal("foo (new star) [0ns]", fresh.ToString());
     }
 
-    /// <summary>
-    /// Any AOC reply that is not a grade is worth seeing next to what the
-    /// solver thought, since neither one settles the answer on its own.
-    /// </summary>
+    /// <summary>An ungraded AOC reply shows beside what the solver thought.</summary>
     [Fact]
     public void BothVerdictsShowWhenAocDidNotGrade()
     {
@@ -103,10 +100,7 @@ public class OutcomeTests
         Assert.Equal("(none) [0ns]", outcome.ToString());
     }
 
-    /// <summary>
-    /// The invariant that survived splitting the answer from the outcome:
-    /// nothing to submit means nothing to check.
-    /// </summary>
+    /// <summary>Nothing to submit means nothing to check.</summary>
     [Fact]
     public void UnsubmittableAnswersNeverTakeAVerdict()
     {
@@ -121,9 +115,7 @@ public class OutcomeTests
         }
     }
 
-    /// <summary>
-    /// The whole chain, since the outermost message rarely names the day.
-    /// </summary>
+    /// <summary>The whole chain: the outermost message rarely names the day.</summary>
     [Fact]
     public void FailedPartsRenderEveryCause()
     {

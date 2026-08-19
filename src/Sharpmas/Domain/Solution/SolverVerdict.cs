@@ -2,9 +2,7 @@ using System.Diagnostics;
 
 namespace Sharpmas.Domain.Solution;
 
-/// <summary>
-/// What the third-party solver made of an answer.
-/// </summary>
+/// <summary>What the third-party solver made of an answer.</summary>
 /// <remarks>
 /// Repeatable, since the solver has no accounts and no memory, which is what
 /// makes it usable as a gate before submitting. A record hierarchy rather than
@@ -27,27 +25,18 @@ public abstract record SolverVerdict
     /// <summary>No implementation for that puzzle.</summary>
     public sealed record Unsupported : SolverVerdict;
 
-    /// <summary>
-    /// A verdict from a plain match or mismatch, where there is no direction to
-    /// report.
-    /// </summary>
-    /// <param name="isCorrect">Whether the answers matched.</param>
-    /// <returns><see cref="Correct"/> or <see cref="Incorrect"/>.</returns>
+    /// <summary>A verdict from a plain match, with no direction to report.</summary>
     public static SolverVerdict From(bool isCorrect)
     {
         return isCorrect ? new Correct() : new Incorrect();
     }
 
-    /// <summary>
-    /// A verdict from comparing our answer against the solver's.
-    /// </summary>
+    /// <summary>A verdict from comparing our answer against the solver's.</summary>
     /// <remarks>
     /// Read from our side, so a negative comparison means ours was the low one.
     /// Normalised through <see cref="Math.Sign(int)"/> because a comparison only
     /// promises a sign, never a particular value.
     /// </remarks>
-    /// <param name="comparison">Our answer compared against the solver's.</param>
-    /// <returns><see cref="Low"/>, <see cref="Correct"/>, or <see cref="High"/>.</returns>
     public static SolverVerdict From(int comparison)
     {
         return Math.Sign(comparison) switch
@@ -59,17 +48,11 @@ public abstract record SolverVerdict
         };
     }
 
-    /// <summary>
-    /// How the verdict reads in a part's output line.
-    /// </summary>
+    /// <summary>How the verdict reads in a part's output line.</summary>
     /// <remarks>
     /// Sealed so the cases cannot generate their own, which would silently
     /// replace this one.
     /// </remarks>
-    /// <returns>The verdict as a lowercase word.</returns>
-    /// <exception cref="UnreachableException">
-    /// Thrown when a case is added without a line here.
-    /// </exception>
     public sealed override string ToString()
     {
         return this switch

@@ -8,9 +8,7 @@ public static class Environment
     const string CookieKey = "COOKIE";
     const string UnconfiguredUserAgent = "sharpmas (unconfigured; set CONTACT in .env)";
 
-    /// <summary>
-    /// Reads .env into the environment, leaving any variable already set alone.
-    /// </summary>
+    /// <summary>Reads .env into the environment; already-set variables win.</summary>
     /// <remarks>
     /// An exported variable therefore beats the file, which is what makes a
     /// one-off override on the command line work. A missing file is ordinary:
@@ -91,7 +89,6 @@ public static class Environment
     /// The pair exists so the requirement is named here rather than at every
     /// call site, and so a run that needs no network never asks.
     /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown when it is not set.</exception>
     public static string Cookie()
     {
         return CookieIfSet()
