@@ -1,3 +1,1 @@
-using Sharpmas.Inbound;
-
-return await Cli.Run(args);
+return await Sharpmas.Inbound.Cli.Run(args);
