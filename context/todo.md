@@ -31,12 +31,24 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **Catch up to rustmas's renames. This is the next thing.** All in `Solved.cs`
-  and its two consumers, `SolveRun` and `Solver.Solve`: `Parse` becomes
-  `ParsedIn`, `One`/`Two` become `PartOne`/`PartTwo`, and `Total` becomes
-  `TotalElapsed`. rustmas renamed on 2026-08-20 so the field reads as data, the
-  parts match the trait methods they came from, and the total says which total
-  in a struct that also holds a parse duration.
+- **Catch up to rustmas, which moved ahead on 2026-08-20. This is the next
+  thing.** Its journal entry for that day has the full context. In rough order:
+
+  - Renames in `Solved.cs` and its consumers: `Parse` to `ParsedIn`, `One`/`Two`
+    to `PartOne`/`PartTwo`, `Total` to `TotalElapsed`.
+  - The eager `Filter` type: `Filter.New(year, day)` validates up front with
+    errors naming the value and the live bound (`day 13 is outside 1..=12` for
+    2025), and expansion becomes infallible. Kills the silent exit on
+    `-y 2030`. `Day.Each` becomes `Day.Matching(filter)` over an infallible
+    `Day.All()`. The C# wrinkle: sharpmas's `Day.Each` never had a Result to
+    delete, so the win here is only the eager errors, which is still the point.
+  - `OutOfRange`-style errors split per producer: `Year`'s constructor exception
+    should name the value and range, `Day`'s the year's own day count.
+  - `HasSecondPuzzle` on `Day`: day 25's second star is awarded rather than
+    puzzled, so nothing should keep fetching its part two.
+  - The run-fold question: rustmas moved each command's `run` into its module.
+    sharpmas's `SolveRun`/`FetchRun` classes are the C# equivalent already, so
+    likely nothing to do, but check the shape reads the same.
 
 - **Add `Answer.Unwritten` while in there.** Still outstanding from the original
   list: `None` currently covers both "no answer exists" and "nobody wrote this
