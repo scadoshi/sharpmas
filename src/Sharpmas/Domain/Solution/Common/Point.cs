@@ -31,6 +31,22 @@ public readonly record struct Point(int X, int Y)
             _ => this,
         };
 
+    /// <summary>Moves a distance in a direction, or null past either end of int.</summary>
+    /// <remarks>
+    /// The counterpart to <see cref="SaturatingMoved"/>: clamping suits a walk
+    /// with no edges, null suits one where going too far is the caller's to
+    /// handle.
+    /// </remarks>
+    public Point? CheckedMoved(Direction direction, int distance) =>
+        direction switch
+        {
+            Direction.Left => X.CheckedSub(distance) is int moved ? this with { X = moved } : null,
+            Direction.Right => X.CheckedAdd(distance) is int moved ? this with { X = moved } : null,
+            Direction.Down => Y.CheckedSub(distance) is int moved ? this with { Y = moved } : null,
+            Direction.Up => Y.CheckedAdd(distance) is int moved ? this with { Y = moved } : null,
+            _ => this,
+        };
+
     /// <summary>Manhattan distance back to the origin, not the straight line.</summary>
     /// <remarks>
     /// Returns a long because two int magnitudes can sum past int, and because

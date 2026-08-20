@@ -24,6 +24,24 @@ public class PointTests
     }
 
     [Fact]
+    public void CheckedMovesOneStepEachWay()
+    {
+        Assert.Equal(new Point(-1, 0), Point.Origin.CheckedMoved(Direction.Left, 1));
+        Assert.Equal(new Point(1, 0), Point.Origin.CheckedMoved(Direction.Right, 1));
+        Assert.Equal(new Point(0, 1), Point.Origin.CheckedMoved(Direction.Up, 1));
+        Assert.Equal(new Point(0, -1), Point.Origin.CheckedMoved(Direction.Down, 1));
+    }
+
+    [Fact]
+    public void CheckedMovedPastTheEdgeReturnsNull()
+    {
+        Assert.Null(new Point(int.MinValue, 0).CheckedMoved(Direction.Left, 1));
+        Assert.Null(new Point(int.MaxValue, 0).CheckedMoved(Direction.Right, 1));
+        Assert.Null(new Point(0, int.MaxValue).CheckedMoved(Direction.Up, 1));
+        Assert.Null(new Point(0, int.MinValue).CheckedMoved(Direction.Down, 1));
+    }
+
+    [Fact]
     public void DistanceFromOriginIsManhattan()
     {
         Assert.Equal(0, Point.Origin.DistanceFromOrigin());
