@@ -31,7 +31,21 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
 
 ## Next
 
-- **Finish `IntExtensions`. This is the next thing.** A stub is sitting
+- **Catch up to rustmas's renames. This is the next thing.** All in `Solved.cs`
+  and its two consumers, `SolveRun` and `Solver.Solve`: `Parse` becomes
+  `ParsedIn`, `One`/`Two` become `PartOne`/`PartTwo`, and `Total` becomes
+  `TotalElapsed`. rustmas renamed on 2026-08-20 so the field reads as data, the
+  parts match the trait methods they came from, and the total says which total
+  in a struct that also holds a parse duration.
+
+- **Add `Answer.Unwritten` while in there.** Still outstanding from the original
+  list: `None` currently covers both "no answer exists" and "nobody wrote this
+  part", which is the ambiguous-absence pattern. `Unwritten` splits the second
+  off, prints `(unwritten)`, and the `YearTemplate` stubs switch to returning it
+  so a stub cannot read as a finished part with nothing to say. rustmas has it;
+  `Answer.cs` has `Value`, `Visual`, and `None` only.
+
+- **Finish `IntExtensions`. Done, kept for the record below.** A stub is sitting
   uncommitted at `Domain/Solution/Common/IntExtensions.cs`. The plan:
   `CheckedAdd(int rhs)` returning `int?`, widen to `long` and range-check, plus
   `CheckedSub` as its own method since `CheckedAdd(-rhs)` breaks when `rhs` is
