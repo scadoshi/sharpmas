@@ -40,25 +40,25 @@ public record struct Cell(uint Row, uint Column)
     public Cell? CheckedMoved(Direction direction, uint distance) =>
         direction switch
         {
-            Direction.Left => Checked((long)Column - distance) is uint moved
+            Direction.Left => Column.CheckedSub(distance) is uint moved
                 ? this with
                 {
                     Column = moved,
                 }
                 : null,
-            Direction.Right => Checked((long)Column + distance) is uint moved
+            Direction.Right => Column.CheckedAdd(distance) is uint moved
                 ? this with
                 {
                     Column = moved,
                 }
                 : null,
-            Direction.Up => Checked((long)Row - distance) is uint moved
+            Direction.Up => Row.CheckedSub(distance) is uint moved
                 ? this with
                 {
                     Row = moved,
                 }
                 : null,
-            Direction.Down => Checked((long)Row + distance) is uint moved
+            Direction.Down => Row.CheckedAdd(distance) is uint moved
                 ? this with
                 {
                     Row = moved,
@@ -66,12 +66,4 @@ public record struct Cell(uint Row, uint Column)
                 : null,
             _ => this,
         };
-
-    /// <summary>A widened result narrowed back down, or null if it will not fit.</summary>
-    /// <remarks>
-    /// A comparison rather than a <c>checked</c> block: hitting an edge is
-    /// ordinary here, and throwing costs a stack walk on a hot path.
-    /// </remarks>
-    static uint? Checked(long value) =>
-        (value >= uint.MinValue && value <= uint.MaxValue) ? (uint)value : null;
 }

@@ -12,25 +12,20 @@ public static class IntExtensions
     extension(int value)
     {
         /// <summary>The sum, or null past either end of int.</summary>
-        public int? CheckedAdd(int rhs)
-        {
-            var sum = (long)value + rhs;
-            return (sum >= int.MinValue && sum <= int.MaxValue) ? (int)sum : null;
-        }
+        public int? CheckedAdd(int rhs) =>
+            (long)value + rhs is >= int.MinValue and <= int.MaxValue and var sum ? (int)sum : null;
 
         /// <summary>The difference, or null past either end of int.</summary>
-        public int? CheckedSub(int rhs)
-        {
-            var diff = (long)value - rhs;
-            return (diff >= int.MinValue && diff <= int.MaxValue) ? (int)diff : null;
-        }
+        public int? CheckedSub(int rhs) =>
+            (long)value - rhs is >= int.MinValue and <= int.MaxValue and var difference
+                ? (int)difference
+                : null;
 
         /// <summary>The product, or null past either end of int.</summary>
-        public int? CheckedMul(int rhs)
-        {
-            var product = (long)value * rhs;
-            return (product >= int.MinValue && product <= int.MaxValue) ? (int)product : null;
-        }
+        public int? CheckedMul(int rhs) =>
+            (long)value * rhs is >= int.MinValue and <= int.MaxValue and var product
+                ? (int)product
+                : null;
 
         /// <summary>The quotient, or null for zero and for int.MinValue / -1.</summary>
         /// <remarks>
@@ -45,26 +40,23 @@ public static class IntExtensions
     extension(uint value)
     {
         /// <summary>The sum, or null past uint.MaxValue.</summary>
-        public uint? CheckedAdd(uint rhs)
-        {
-            var sum = (ulong)value + rhs;
-            return sum <= uint.MaxValue ? (uint)sum : null;
-        }
+        public uint? CheckedAdd(uint rhs) =>
+            (ulong)value + rhs is >= uint.MinValue and <= uint.MaxValue and var sum
+                ? (uint)sum
+                : null;
 
         /// <summary>The difference, or null below zero.</summary>
-        public uint? CheckedSub(uint rhs)
-        {
-            var diff = (long)value - rhs;
-            return diff >= 0 ? (uint)diff : null;
-        }
+        public uint? CheckedSub(uint rhs) =>
+            (long)value - rhs is >= uint.MinValue and <= uint.MaxValue and var difference
+                ? (uint)difference
+                : null;
 
         /// <summary>The product, or null past uint.MaxValue.</summary>
         /// <remarks>Widens to ulong: two uints can multiply past long.</remarks>
-        public uint? CheckedMul(uint rhs)
-        {
-            var product = (ulong)value * rhs;
-            return product <= uint.MaxValue ? (uint)product : null;
-        }
+        public uint? CheckedMul(uint rhs) =>
+            (ulong)value * rhs is >= uint.MinValue and <= uint.MaxValue and var product
+                ? (uint)product
+                : null;
 
         /// <summary>The quotient, or null for zero. No negatives, so no other case.</summary>
         public uint? CheckedDiv(uint rhs) => rhs == 0 ? null : value / rhs;
