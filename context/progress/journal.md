@@ -102,6 +102,48 @@ all did. Ported back there the same day.
 `Cell`, the last of rustmas's common types, counting rows down from the top
 where `Point` counts y upward.
 
+## 2026-08-21
+
+Caught up two items from the rustmas list: the provenance renames
+(`SolverVerdict`/`AocVerdict` with their `With*` attachers, `ParsedIn`,
+`PartOne`/`PartTwo`, `TotalElapsed`) and `LazyAocClient`'s move to
+`Outbound/Client/`, beside the client it wraps. Both landed on both branches,
+live run verified. One C# note worth keeping: a property may share its type's
+name (`public SolverVerdict? SolverVerdict`), and pattern arms still resolve
+the word as the type. Legal, dense, and the display tests pin every arm.
+
+### Queued for the plane: the Filter port
+
+Scotty is writing this one himself. Notes to start from, so the design is not
+re-derived at altitude; rustmas's 2026-08-20 journal entries have the full
+story.
+
+- The shape: `Filter.New(year, day)` validates eagerly and holds
+  `Year?` plus a loose `int?` day. Expansion (`Day.Matching(filter)` over an
+  infallible `Day.All()`) cannot fail. The day field is deliberately not a
+  `Day`: a day filter with no year is not an address, since day 13 is valid in
+  2015 and not in 2025.
+- Four cases in the constructor: nothing, year alone (validate it), day alone
+  (loose 1..=25), both (prove the pair through the `Day` constructor, keep the
+  parts).
+- The payoff is the error messages, so build those first: exceptions per
+  producer, each naming the given value and the live bound. The target
+  transcript, from rustmas:
+  `year 2030 is outside 2015..=2025`, `day 26 is outside 1..=25`, and for
+  `-y 2025 -d 13` the year's own bound, `day 13 is outside 1..=12`.
+- C# wrinkles to expect: no `Result`, so the constructor throws and the CLI's
+  existing catch prints the chain, no new plumbing. sharpmas's `Day.Each` never
+  had a `Result` to delete, so the win is purely the eager errors. `FINAL_DAY`
+  wants to be a named constant shared with `HasSecondPuzzle` rather than a
+  literal in two places, which is also the nudge to do `HasSecondPuzzle` in the
+  same sitting.
+- Tests that earned their place in rustmas: accepts what the range allows,
+  rejects either side, judges the pair strictly (13 alone fine, 13-with-2015
+  fine, 13-with-2025 rejected), and the error names the real bound. Plus the
+  wiring test rustmas added later: the pair filter yields exactly its one day.
+- Day 25's gate rides along: `chase` only when the day has a second puzzle, or
+  a finished day 25 costs a request every run forever.
+
 ## 2026-08-18
 
 The tool is done. `solve -y 2015 -d 1 --validate` fetches from the site, writes
