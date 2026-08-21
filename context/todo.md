@@ -50,6 +50,21 @@ Reopen any of them if C# argues otherwise, but know what you are arguing with.
     sharpmas's `SolveRun`/`FetchRun` classes are the C# equivalent already, so
     likely nothing to do, but check the shape reads the same.
 
+  Added 2026-08-21, from the LazyAocClient session:
+
+  - Verdicts named by provenance on `Outcome`: `Verdict`/`WithVerdict` become
+    `SolverVerdict`/`WithSolverVerdict`, `Submission`/`WithSubmission` become
+    `AocVerdict`/`WithAocVerdict`. One word each was too easy to confuse.
+  - `LazyAocClient` moves from `Inbound/` to beside `AocClient` in
+    `Outbound/Client/`: it holds only client knowledge (build on first use,
+    from the environment), so it lives with the thing it wraps. rustmas put it
+    there after making the layering argument properly.
+  - The eager path reads `default` then `Connected()` when submitting, rather
+    than a second constructor; rustmas grew `from_env` for it but the call-site
+    override is the shape both repos should read as.
+  - `solved.parsed_in` printing and the `has_second_puzzle` gate ride along with
+    items already listed above.
+
 - **Add `Answer.Unwritten` while in there.** Still outstanding from the original
   list: `None` currently covers both "no answer exists" and "nobody wrote this
   part", which is the ambiguous-absence pattern. `Unwritten` splits the second
