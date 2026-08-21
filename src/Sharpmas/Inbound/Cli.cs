@@ -96,10 +96,10 @@ public static class Cli
             switch (args[i])
             {
                 case "-y" or "--year":
-                    year = ParseValue(args, ref i, "year");
+                    year = ParseIntValue(args, ref i, "year");
                     break;
                 case "-d" or "--day":
-                    day = ParseValue(args, ref i, "day");
+                    day = ParseIntValue(args, ref i, "day");
                     break;
                 case "-v" or "--validate":
                     validate = true;
@@ -119,7 +119,7 @@ public static class Cli
     }
 
     /// <summary>Reads the number after a flag, failing rather than defaulting.</summary>
-    static int ParseValue(string[] args, ref int i, string name)
+    static int ParseIntValue(string[] args, ref int i, string name)
     {
         if (i + 1 >= args.Length)
         {
