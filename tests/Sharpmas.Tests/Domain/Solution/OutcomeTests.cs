@@ -27,28 +27,28 @@ public class OutcomeTests
     [Fact]
     public void SolverVerdictAloneShows()
     {
-        var outcome = Solved().WithVerdict(new SolverVerdict.High());
+        var outcome = Solved().WithSolverVerdict(new SolverVerdict.High());
         Assert.Equal("foo (high) [0ns]", outcome.ToString());
     }
 
     [Fact]
     public void AocVerdictAloneShows()
     {
-        var outcome = Solved().WithSubmission(new AocVerdict.Low());
+        var outcome = Solved().WithAocVerdict(new AocVerdict.Low());
         Assert.Equal("foo (low) [0ns]", outcome.ToString());
     }
 
     [Fact]
     public void AocCorrectReadsAsANewStar()
     {
-        var outcome = Solved().WithSubmission(new AocVerdict.Correct());
+        var outcome = Solved().WithAocVerdict(new AocVerdict.Correct());
         Assert.Equal("foo (new star) [0ns]", outcome.ToString());
     }
 
     [Fact]
     public void AocAlreadySolvedReadsAsStarred()
     {
-        var outcome = Solved().WithSubmission(new AocVerdict.AlreadySolved());
+        var outcome = Solved().WithAocVerdict(new AocVerdict.AlreadySolved());
         Assert.Equal("foo (starred) [0ns]", outcome.ToString());
     }
 
@@ -56,13 +56,13 @@ public class OutcomeTests
     public void AocSupersedesTheSolver()
     {
         var starred = Solved()
-            .WithVerdict(new SolverVerdict.Correct())
-            .WithSubmission(new AocVerdict.AlreadySolved());
+            .WithSolverVerdict(new SolverVerdict.Correct())
+            .WithAocVerdict(new AocVerdict.AlreadySolved());
         Assert.Equal("foo (starred) [0ns]", starred.ToString());
 
         var fresh = Solved()
-            .WithVerdict(new SolverVerdict.Correct())
-            .WithSubmission(new AocVerdict.Correct());
+            .WithSolverVerdict(new SolverVerdict.Correct())
+            .WithAocVerdict(new AocVerdict.Correct());
         Assert.Equal("foo (new star) [0ns]", fresh.ToString());
     }
 
@@ -71,8 +71,8 @@ public class OutcomeTests
     public void BothVerdictsShowWhenAocDidNotGrade()
     {
         var outcome = Solved()
-            .WithVerdict(new SolverVerdict.Correct())
-            .WithSubmission(new AocVerdict.Cooldown("1m 0s"));
+            .WithSolverVerdict(new SolverVerdict.Correct())
+            .WithAocVerdict(new AocVerdict.Cooldown("1m 0s"));
         Assert.Equal("foo (correct, rate limited, 1m 0s left to wait) [0ns]", outcome.ToString());
     }
 
@@ -108,10 +108,10 @@ public class OutcomeTests
         foreach (var answer in unsubmittable)
         {
             var outcome = new Outcome(new AnswerResult.Ok(answer), TimeSpan.Zero)
-                .WithVerdict(new SolverVerdict.Correct())
-                .WithSubmission(new AocVerdict.Correct());
-            Assert.Null(outcome.Verdict);
-            Assert.Null(outcome.Submission);
+                .WithSolverVerdict(new SolverVerdict.Correct())
+                .WithAocVerdict(new AocVerdict.Correct());
+            Assert.Null(outcome.SolverVerdict);
+            Assert.Null(outcome.AocVerdict);
         }
     }
 
@@ -129,10 +129,10 @@ public class OutcomeTests
     public void FailedPartsNeverTakeAVerdict()
     {
         var outcome = Failed()
-            .WithVerdict(new SolverVerdict.Correct())
-            .WithSubmission(new AocVerdict.Correct());
+            .WithSolverVerdict(new SolverVerdict.Correct())
+            .WithAocVerdict(new AocVerdict.Correct());
         Assert.Null(outcome.GetValue());
-        Assert.Null(outcome.Verdict);
-        Assert.Null(outcome.Submission);
+        Assert.Null(outcome.SolverVerdict);
+        Assert.Null(outcome.AocVerdict);
     }
 }

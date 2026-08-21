@@ -49,9 +49,9 @@ public static class Solver
 
         return new Solved
         {
-            Parse = parse,
-            One = one,
-            Two = two,
+            ParsedIn = parse,
+            PartOne = one,
+            PartTwo = two,
         };
     }
 
@@ -81,6 +81,6 @@ public static class Solver
         {
             return outcome;
         }
-        return outcome.WithVerdict(await client.ValidateAnswer(day, input, part, value));
+        return outcome.WithSolverVerdict(await client.ValidateAnswer(day, input, part, value));
     }
 }

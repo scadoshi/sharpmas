@@ -25,12 +25,12 @@ public static class SolveUtils
         {
             return outcome;
         }
-        if (outcome.Verdict is not (SolverVerdict.Correct or SolverVerdict.Unsupported))
+        if (outcome.SolverVerdict is not (SolverVerdict.Correct or SolverVerdict.Unsupported))
         {
             return outcome;
         }
 
-        return outcome.WithSubmission(await aoc.SubmitAnswer(day, part, value));
+        return outcome.WithAocVerdict(await aoc.SubmitAnswer(day, part, value));
     }
 
     /// <summary>Asks before an unfiltered submit run, which would post every solved day.</summary>
