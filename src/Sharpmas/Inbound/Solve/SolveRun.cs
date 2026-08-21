@@ -89,25 +89,25 @@ public static class SolveRun
                 var aoc = client.Connected();
                 solved = new Solved
                 {
-                    Parse = solved.Parse,
-                    One = await SolveUtils.Submit(aoc, day, Part.One, solved.One),
-                    Two = await SolveUtils.Submit(aoc, day, Part.Two, solved.Two),
+                    ParsedIn = solved.ParsedIn,
+                    PartOne = await SolveUtils.Submit(aoc, day, Part.One, solved.PartOne),
+                    PartTwo = await SolveUtils.Submit(aoc, day, Part.Two, solved.PartTwo),
                 };
             }
 
             // A new star on part one unlocks part two, which was still locked
             // when this run read the cache.
-            if (solved.One.Submission is AocVerdict.Correct)
+            if (solved.PartOne.AocVerdict is AocVerdict.Correct)
             {
                 await Inputs.EnsureEntry(client, day);
             }
 
             Console.WriteLine(
-                $"year {day.Year} day {day.Value} in {solved.Total.Formatted()} "
-                    + $"({solved.Parse.Formatted()} parsing)"
+                $"year {day.Year} day {day.Value} in {solved.TotalElapsed.Formatted()} "
+                    + $"({solved.ParsedIn.Formatted()} parsing)"
             );
-            Console.WriteLine($"  part one: {solved.One}");
-            Console.WriteLine($"  part two: {solved.Two}");
+            Console.WriteLine($"  part one: {solved.PartOne}");
+            Console.WriteLine($"  part two: {solved.PartTwo}");
         }
     }
 }

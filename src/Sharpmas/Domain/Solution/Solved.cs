@@ -2,9 +2,9 @@ namespace Sharpmas.Domain.Solution;
 
 public class Solved
 {
-    public required TimeSpan Parse { get; init; }
-    public required Outcome One { get; init; }
-    public required Outcome Two { get; init; }
+    public required TimeSpan ParsedIn { get; init; }
+    public required Outcome PartOne { get; init; }
+    public required Outcome PartTwo { get; init; }
 
-    public TimeSpan Total => Parse + One.Elapsed + Two.Elapsed;
+    public TimeSpan TotalElapsed => ParsedIn + PartOne.Elapsed + PartTwo.Elapsed;
 }

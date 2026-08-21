@@ -21,26 +21,26 @@ public record Outcome
     /// <summary>The solver's verdict, or null when nothing checked it.</summary>
     /// <remarks>
     /// Repeatable, so it is what gates submission. Set only from inside, so
-    /// <see cref="WithVerdict"/> is the one way it can be attached. A public
+    /// <see cref="WithSolverVerdict"/> is the one way it can be attached. A public
     /// <c>init</c> would let a caller reach it through a <c>with</c> expression
     /// and skip the submittable-answer check.
     /// </remarks>
-    public SolverVerdict? Verdict { get; private init; }
+    public SolverVerdict? SolverVerdict { get; private init; }
 
     /// <summary>AOC's reply, or null when nothing was submitted.</summary>
     /// <remarks>
     /// Says whether the star exists. Set only from inside, for the same reason
-    /// as <see cref="Verdict"/>.
+    /// as <see cref="SolverVerdict"/>.
     /// </remarks>
-    public AocVerdict? Submission { get; private init; }
+    public AocVerdict? AocVerdict { get; private init; }
 
     /// <summary>An outcome with nothing known about it yet.</summary>
     public Outcome(AnswerResult answerResult, TimeSpan elapsed)
     {
         AnswerResult = answerResult;
         Elapsed = elapsed;
-        Verdict = null;
-        Submission = null;
+        SolverVerdict = null;
+        AocVerdict = null;
     }
 
     /// <summary>The submittable text, or null when there is none.</summary>
@@ -66,24 +66,24 @@ public record Outcome
     /// left alone and a copy carrying the verdict comes back. An unsubmittable
     /// answer has nothing to check, so it returns itself unchanged.
     /// </remarks>
-    public Outcome WithVerdict(SolverVerdict verdict)
+    public Outcome WithSolverVerdict(SolverVerdict verdict)
     {
         if (GetValue() is null)
         {
             return this;
         }
-        return this with { Verdict = verdict };
+        return this with { SolverVerdict = verdict };
     }
 
     /// <summary>Attaches AOC's reply if there was something to submit.</summary>
-    /// <remarks>Same shape as <see cref="WithVerdict"/>.</remarks>
-    public Outcome WithSubmission(AocVerdict submission)
+    /// <remarks>Same shape as <see cref="WithSolverVerdict"/>.</remarks>
+    public Outcome WithAocVerdict(AocVerdict aocVerdict)
     {
         if (GetValue() is null)
         {
             return this;
         }
-        return this with { Submission = submission };
+        return this with { AocVerdict = aocVerdict };
     }
 
     /// <summary>The answer, then notes, then timing.</summary>
@@ -108,7 +108,7 @@ public record Outcome
                 $"unhandled {nameof(AnswerResult)}: {AnswerResult.GetType().Name}"
             ),
         };
-        string notes = (Verdict, Submission) switch
+        string notes = (SolverVerdict, AocVerdict) switch
         {
             (_, AocVerdict.Correct) => "new star",
             (_, AocVerdict.AlreadySolved) => "starred",
