@@ -6,19 +6,6 @@ using Sharpmas.Outbound.Store;
 
 namespace Sharpmas.Inbound;
 
-/// <summary>Builds a client only once something actually needs downloading.</summary>
-/// <remarks>
-/// A fully cached run then costs no connection and needs no cookie, which is
-/// what lets solving work offline.
-/// </remarks>
-public sealed class LazyAocClient
-{
-    AocClient? client;
-
-    /// <summary>The client, built on first use.</summary>
-    public AocClient Connected() => client ??= new AocClient();
-}
-
 /// <summary>Getting a day's input and puzzle text, from cache or from the site.</summary>
 public static class Inputs
 {

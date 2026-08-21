@@ -1,4 +1,5 @@
 using Sharpmas.Domain.Address;
+using Sharpmas.Outbound.Client;
 
 namespace Sharpmas.Inbound.Fetch;
 
