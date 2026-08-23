@@ -17,7 +17,7 @@ public static class FetchRun
         // Built on first download, so a fully cached run needs no cookie.
         var client = new LazyAocClient();
 
-        foreach (var day in Day.Each(args.Year, args.Day))
+        foreach (var day in Day.Matching(new Filter(args.Year, args.Day)))
         {
             await Inputs.EnsureEntry(client, day);
         }
