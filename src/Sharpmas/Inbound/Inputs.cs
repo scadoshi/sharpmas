@@ -1,8 +1,8 @@
 using Sharpmas.Domain.Address;
 using Sharpmas.Outbound.Client;
+using Sharpmas.Outbound.Store;
 // Aliased because System.Environment is implicitly imported and collides.
 using Environment = Sharpmas.Outbound.Client.Environment;
-using Sharpmas.Outbound.Store;
 
 namespace Sharpmas.Inbound;
 
@@ -37,7 +37,8 @@ public static class Inputs
         var staleSession = cookie is not null && !cached.Input.IsFrom(cookie);
         // No cookie means nothing to ask with, so an incomplete cache stays as
         // it is rather than failing the run.
-        var chasePartTwo = cached.Instructions.PartTwo is null && cookie is not null;
+        var chasePartTwo =
+            cached.Instructions.PartTwo is null && day.HasSecondPuzzle && cookie is not null;
 
         if (!staleSession && !chasePartTwo)
         {

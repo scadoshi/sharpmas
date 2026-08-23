@@ -16,41 +16,30 @@ public sealed class Year
     /// <summary>Creates a validated year.</summary>
     public Year(int year)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, Latest());
-        ArgumentOutOfRangeException.ThrowIfLessThan(year, FirstYear);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(year, Latest(), nameof(year));
+        ArgumentOutOfRangeException.ThrowIfLessThan(year, FirstYear, nameof(year));
         Value = year;
     }
 
     /// <summary>Days this event published: 25, except 2025 ran 12.</summary>
-    public int DaysIn()
-    {
-        if (Value == 2025)
+    public int DaysIn() =>
+        Value switch
         {
-            return 12;
-        }
-        return 25;
-    }
+            2025 => 12,
+            _ => 25,
+        };
 
     /// <summary>The latest event that has actually been published.</summary>
     /// <remarks>
     /// A new event drops each December, so for most of the year the current
     /// calendar year has nothing in it yet and the answer is the year before.
     /// </remarks>
-    public static int Latest()
-    {
-        var now = DateTime.Now;
-        if (now.Month == 12)
+    public static int Latest() =>
+        DateTime.Now.Month switch
         {
-            return now.Year;
-        }
-        else
-        {
-            return now.Year - 1;
-        }
-    }
+            12 => DateTime.Now.Year,
+            _ => DateTime.Now.Year - 1,
+        };
 
-    public override string ToString()
-    {
-        return Value.ToString();
-    }
+    public override string ToString() => Value.ToString();
 }

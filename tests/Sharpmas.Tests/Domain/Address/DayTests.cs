@@ -44,9 +44,9 @@ public class DayTests
     }
 
     [Fact]
-    public void EachWalksEveryPublishedDay()
+    public void MatchingWalksEveryPublishedDay()
     {
-        var all = Day.Each(null, null).ToList();
+        var all = Day.Matching(new Filter(null, null)).ToList();
         var expected = Enumerable
             .Range(Year.FirstYear, Year.Latest() - Year.FirstYear + 1)
             .Sum(y => new Year(y).DaysIn());
@@ -54,24 +54,24 @@ public class DayTests
     }
 
     [Fact]
-    public void EachFiltersAreIndependent()
+    public void MatchingFiltersAreIndependent()
     {
-        var byYear = Day.Each(2015, null).ToList();
+        var byYear = Day.Matching(new Filter(2015, null)).ToList();
         Assert.Equal(25, byYear.Count);
         Assert.All(byYear, d => Assert.Equal(2015, d.Year.Value));
 
-        var byDay = Day.Each(null, 1).ToList();
+        var byDay = Day.Matching(new Filter(null, 1)).ToList();
         Assert.Equal(Year.Latest() - Year.FirstYear + 1, byDay.Count);
         Assert.All(byDay, d => Assert.Equal(1, d.Value));
 
-        Assert.Single(Day.Each(2015, 1));
+        Assert.Single(Day.Matching(new Filter(2015, 1)));
     }
 
     /// <summary>A day-only filter skips years that never had that day.</summary>
     [Fact]
-    public void EachSkipsYearsWithoutThatDay()
+    public void MatchingSkipsYearsWithoutThatDay()
     {
-        var days = Day.Each(null, 25).ToList();
+        var days = Day.Matching(new Filter(null, 25)).ToList();
         Assert.All(days, d => Assert.NotEqual(2025, d.Year.Value));
         Assert.Equal(Year.Latest() - Year.FirstYear, days.Count);
     }

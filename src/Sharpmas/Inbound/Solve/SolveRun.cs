@@ -1,6 +1,6 @@
 using Sharpmas.Domain.Address;
-using Sharpmas.Extensions;
 using Sharpmas.Domain.Solution;
+using Sharpmas.Extensions;
 using Sharpmas.Outbound.Client;
 
 namespace Sharpmas.Inbound.Solve;
@@ -30,7 +30,7 @@ public static class SolveRun
 
     /// <summary>How many parts a run over these filters would touch.</summary>
     static int PartCount(int? year, int? day) =>
-        Day.Each(year, day).Count(d => SolverFor(d) is not null) * 2;
+        Day.Matching(new Filter(year, day)).Count(d => SolverFor(d) is not null) * 2;
 
     /// <summary>Solves every day the filters allow.</summary>
     public static async Task Run(SolveArgs args)
@@ -55,7 +55,7 @@ public static class SolveRun
             client.Connected();
         }
 
-        foreach (var day in Day.Each(args.Year, args.Day))
+        foreach (var day in Day.Matching(new Filter(args.Year, args.Day)))
         {
             // Asked before fetching, so a run over every year downloads nothing
             // for days it cannot solve.
