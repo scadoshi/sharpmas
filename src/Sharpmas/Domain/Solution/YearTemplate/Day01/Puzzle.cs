@@ -30,8 +30,8 @@ public class Puzzle : ISolution<Puzzle>
     /// Throwing means the day is broken, which is not the same as having no
     /// answer. It stops this part only; the other still runs.
     /// </remarks>
-    public Answer PartOne() => new Answer.None();
+    public Answer PartOne() => new Answer.Unwritten();
 
     /// <summary>Same contract as <see cref="PartOne"/>. Day 25 has no second puzzle.</summary>
-    public Answer PartTwo() => new Answer.None();
+    public Answer PartTwo() => new Answer.Unwritten();
 }
