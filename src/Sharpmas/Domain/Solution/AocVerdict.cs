@@ -10,6 +10,9 @@ namespace Sharpmas.Domain.Solution;
 /// </remarks>
 public abstract record AocVerdict
 {
+    /// <summary>Private, so the set of cases is closed: only nested types can inherit.</summary>
+    private AocVerdict() { }
+
     /// <summary>Graded and accepted. A new star.</summary>
     public sealed record Correct : AocVerdict;
 
