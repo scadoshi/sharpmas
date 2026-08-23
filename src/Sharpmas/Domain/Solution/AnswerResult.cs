@@ -9,6 +9,9 @@ namespace Sharpmas.Domain.Solution;
 /// </remarks>
 public abstract record AnswerResult
 {
+    /// <summary>Private, so the set of cases is closed: only nested types can inherit.</summary>
+    private AnswerResult() { }
+
     /// <summary>The part ran and produced an answer.</summary>
     public sealed record Ok(Answer Answer) : AnswerResult;
 
