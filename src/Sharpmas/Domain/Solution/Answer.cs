@@ -9,6 +9,9 @@ namespace Sharpmas.Domain.Solution;
 /// </remarks>
 public abstract record Answer
 {
+    /// <summary>Private, so the set of cases is closed: only nested types can inherit.</summary>
+    private Answer() { }
+
     /// <summary>A submittable answer.</summary>
     public sealed record Value(string Data) : Answer;
 
@@ -20,6 +23,10 @@ public abstract record Answer
 
     /// <summary>Nothing to produce. Day 25 part two is the usual case.</summary>
     public sealed record None : Answer;
+
+    /// <summary>Nobody has written this part yet, which is not the same as
+    /// having nothing to say.</summary>
+    public sealed record Unwritten : Answer;
 
     /// <summary>A submittable answer. What a day returns.</summary>
     public static Answer Solved(string data)
@@ -54,6 +61,7 @@ public abstract record Answer
             Value(string data) => $"{data}",
             Visual(string art) => $"\n{art}\n",
             None => "(none)",
+            Unwritten => "(unwritten)",
             _ => throw new UnreachableException($"unhandled {nameof(Answer)}: {GetType().Name}"),
         };
     }
