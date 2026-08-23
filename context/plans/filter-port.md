@@ -1,4 +1,5 @@
 # Plan: port the Filter type from rustmas
+- Notes/responses back to the AI are marked as bullets against each point in Scotty's voice
 
 What: eager validation of the `-y`/`-d` flags, so an impossible filter errors
 up front instead of sweeping the range and matching nothing in silence.
@@ -19,6 +20,25 @@ The third line is the point: a paired filter reports the year's own day count.
    exception message naming the given value and the live `Latest()`. Same for
    `Day`'s, naming the year's own `DaysIn()`. Today both throw
    `ArgumentOutOfRangeException` with default messages.
+
+   - Looks like we already have this in Year.cs and Day.cs not sure what the message will look like but the exception includes those values exactly
+   - Oh I see you're looking for more custom messages
+   - Looking at what the rust build has
+   - Realizing in the rust build that I wanted to build these errors in their appropriate files since they are for a day and a year not shared between them so they shouldn't live in the higher file that is done now 
+   - Back to sharpmas not sure how to build custom messages into the 
+   - Hmm well the call site looks like this 
+   ```csharp
+       public Day(Year year, int day)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(day, 1, nameof(day));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(day, year.DaysIn(), nameof(day));
+        Year = year;
+        Value = day;
+    }
+    ```
+
+    ...And I feel like this is fine. Not sure I can put custom messages into this. Might have to go with a different style. Yeah I tried the style with a manual if block to catch those and it gets made at me saying to use the throw if method and that's fine for now unless you have qualms about that just let me know but these are good for now 
+
 2. **`FinalDay` constant** (25) on `Day`. Two consumers: the loose day bound
    below, and `HasSecondPuzzle` (step 6).
 3. **`Filter` type** in `Domain/Address/Filter.cs`. Holds `Year?` and `int?`.
