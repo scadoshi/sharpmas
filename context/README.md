@@ -5,8 +5,9 @@ repo facts are one file per topic, shared with `main`; the personal sections
 below exist only here.
 
 - [`todo.md`](todo.md) is what is coming next. Read it first.
-- [`progress/journal.md`](progress/journal.md) is dated session logs, newest
-  first. The latest entries list the C# facts learned so far, worth skimming
+- [`progress/journal/`](progress/journal/) is dated session logs, one file per
+  day, with [`progress/journal.md`](progress/journal.md) saying how they are
+  ordered. The latest entries list the C# facts learned so far, worth skimming
   before answering a language question.
 - [`rules/`](rules/) is binding when working here: commit guidelines, doc
   comment style, and the branch model. On this branch only, since the rules are
