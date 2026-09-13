@@ -89,7 +89,20 @@ Timings never include the network.
 | `unsupported` | The solver has no implementation for this puzzle |
 | `rate limited, 1m 0s left to wait` | Advent of Code refused to grade |
 | `(none)` | The part has no answer, such as day 25 part two |
+| `(unwritten)` | Nobody has written this part yet |
 | `error: ...` | The part failed. The other part still ran |
+
+A run covering more than one day ends with where the time went:
+
+```
+total time spent parsing: 687.8µs
+average parse time per day: 343.9µs
+total time spent solving: 2.5695ms
+average solve time per part: 642.4µs
+slowest part: year 2016 day 1 part two [776.3µs]
+```
+
+One day gets none of it, since every line would restate the line above it.
 
 ## Worth knowing
 
