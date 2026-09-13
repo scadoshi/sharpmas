@@ -5,10 +5,9 @@ public static class TimeSpanExtensions
 {
     /// <summary>The duration in the largest unit that leaves it above one.</summary>
     /// <remarks>
-    /// What Rust's <c>Duration</c> prints by default and C# has no equivalent
-    /// of: <c>ToString</c> gives <c>00:00:00.0000070</c> where a part's output
-    /// line wants <c>7µs</c>. Resolution is 100ns, so the nanosecond branch
-    /// only ever lands on multiples of 100.
+    /// <c>ToString</c> gives <c>00:00:00.0000070</c> where an output line wants
+    /// <c>7µs</c>. Resolution is 100ns, so the nanosecond branch only ever
+    /// lands on multiples of 100.
     /// </remarks>
     public static string Formatted(this TimeSpan timeSpan)
     {

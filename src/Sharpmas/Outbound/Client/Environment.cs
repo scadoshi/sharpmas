@@ -10,9 +10,9 @@ public static class Environment
 
     /// <summary>Reads .env into the environment; already-set variables win.</summary>
     /// <remarks>
-    /// An exported variable therefore beats the file, which is what makes a
-    /// one-off override on the command line work. A missing file is ordinary:
-    /// .env is gitignored, so a fresh clone has none.
+    /// An exported variable beats the file, which is what makes a one-off
+    /// override on the command line work. A missing file is ordinary, since
+    /// <c>.env</c> is gitignored.
     /// </remarks>
     static void LoadEnvFile()
     {
@@ -47,10 +47,9 @@ public static class Environment
 
     /// <summary>The value of `key`, or null when it is unset or blank.</summary>
     /// <remarks>
-    /// Blank counts as unset, so `CONTACT=` in the shipped template means what
-    /// it looks like rather than producing an empty half of a user agent.
-    /// Public so a client can read the variables only it needs, keeping the
-    /// reach of a secret visible in the layout.
+    /// Blank counts as unset, so <c>CONTACT=</c> in the shipped template means
+    /// what it looks like. Public so a client reads only the variables it needs,
+    /// keeping the reach of a secret visible.
     /// </remarks>
     public static string? Get(string key)
     {
@@ -62,7 +61,7 @@ public static class Environment
     /// <remarks>
     /// AOC asks automated clients to be reachable. The unconfigured fallback
     /// names nobody on purpose, so a stranger's traffic points at no real
-    /// contact and at no other repo.
+    /// contact.
     /// </remarks>
     public static string UserAgent()
     {
@@ -78,14 +77,12 @@ public static class Environment
     /// <summary>The session cookie, or null when it is unset or blank.</summary>
     /// <remarks>
     /// For callers that can work offline, where no cookie means skip the
-    /// network rather than fail. Checking which session cached input came from
-    /// needs the cookie but no requests.
+    /// network rather than fail.
     /// </remarks>
     public static string? CookieIfSet() => Get(CookieKey);
 
     /// <summary>The session cookie, required.</summary>
     /// <remarks>
-    /// For callers that cannot proceed without one, such as building a client.
     /// The pair exists so the requirement is named here rather than at every
     /// call site, and so a run that needs no network never asks.
     /// </remarks>

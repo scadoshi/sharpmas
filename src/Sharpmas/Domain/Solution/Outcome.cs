@@ -5,9 +5,8 @@ namespace Sharpmas.Domain.Solution;
 
 /// <summary>One part's answer and everything learned about it afterwards.</summary>
 /// <remarks>
-/// The four properties have three different sources: <see cref="Answer"/> is
-/// computed, <see cref="Elapsed"/> is measured, and the two verdicts arrive over
-/// the network. Only a submittable answer can carry a verdict, which the
+/// A failure is held rather than propagated, so one broken part does not hide
+/// the other's answer. Only a submittable answer can carry a verdict, which the
 /// attaching methods enforce.
 /// </remarks>
 public record Outcome
@@ -20,10 +19,10 @@ public record Outcome
 
     /// <summary>The solver's verdict, or null when nothing checked it.</summary>
     /// <remarks>
-    /// Repeatable, so it is what gates submission. Set only from inside, so
-    /// <see cref="WithSolverVerdict"/> is the one way it can be attached. A public
-    /// <c>init</c> would let a caller reach it through a <c>with</c> expression
-    /// and skip the submittable-answer check.
+    /// Repeatable, so it is what gates submission. A public <c>init</c> would
+    /// let a caller reach it through a <c>with</c> expression and skip the
+    /// submittable-answer check, so <see cref="WithSolverVerdict"/> is the one
+    /// way in.
     /// </remarks>
     public SolverVerdict? SolverVerdict { get; private init; }
 
@@ -59,6 +58,21 @@ public record Outcome
             ),
         };
     }
+
+    /// <summary>How long this part took, if it produced an answer.</summary>
+    /// <remarks>
+    /// Null for a stub, a failure, and day 25's second star, none of which did
+    /// work worth totalling.
+    /// </remarks>
+    public TimeSpan? SolveTime =>
+        AnswerResult switch
+        {
+            AnswerResult.Ok(Answer.Value or Answer.Visual) => Elapsed,
+            AnswerResult.Ok(_) or AnswerResult.Err(_) => null,
+            _ => throw new UnreachableException(
+                $"unhandled {nameof(AnswerResult)}: {AnswerResult.GetType().Name}"
+            ),
+        };
 
     /// <summary>Attaches a solver verdict if there is something to check.</summary>
     /// <remarks>

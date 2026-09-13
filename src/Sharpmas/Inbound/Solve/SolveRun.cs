@@ -13,12 +13,9 @@ public static class SolveRun
 
     /// <summary>Every day that has been written. One line each.</summary>
     /// <remarks>
-    /// Holding a delegate rather than calling means the registry can be asked
-    /// whether a day exists without holding its input, which is what lets a run
-    /// skip unwritten days before downloading and lets a submit run count first.
-    ///
-    /// Days are named fully qualified because every one of them is a
-    /// <c>Puzzle</c> in its own namespace.
+    /// Holding a delegate rather than calling lets a run skip unwritten days
+    /// before downloading and lets a submit run count first. Days are fully
+    /// qualified because every one is a <c>Puzzle</c> in its own namespace.
     /// </remarks>
     static readonly Dictionary<(int Year, int Day), Solver> Solvers = new()
     {
@@ -48,19 +45,17 @@ public static class SolveRun
             return;
         }
 
-        // Built up front when submitting, so a bad cookie fails before any
-        // solving. Otherwise built on first download, leaving cached runs
-        // offline.
+        // Built up front when submitting, so a bad cookie fails before solving.
         var client = new LazyAocClient();
         if (args.Submit)
         {
             client.Connected();
         }
 
+        var totals = new Totals();
         foreach (var day in Day.Matching(new Filter(args.Year, args.Day)))
         {
-            // Asked before fetching, so a run over every year downloads nothing
-            // for days it cannot solve.
+            // Asked before fetching, so unsolvable days download nothing.
             var run = SolverFor(day);
             if (run is null)
             {
@@ -84,8 +79,7 @@ public static class SolveRun
                 continue;
             }
 
-            // Submit before printing, so each part reports what both checkers
-            // said on one line.
+            // Before printing, so each part reports both checkers on one line.
             if (args.Submit)
             {
                 var aoc = client.Connected();
@@ -97,8 +91,7 @@ public static class SolveRun
                 };
             }
 
-            // A new star on part one unlocks part two, which was still locked
-            // when this run read the cache.
+            // A new star on part one unlocks part two, locked until now.
             if (solved.PartOne.AocVerdict is AocVerdict.Correct)
             {
                 await Inputs.EnsureEntry(client, day);
@@ -110,6 +103,15 @@ public static class SolveRun
             );
             Console.WriteLine($"  part one: {solved.PartOne}");
             Console.WriteLine($"  part two: {solved.PartTwo}");
+
+            totals.Add(day, solved);
+        }
+
+        // Below two days the summary would only restate the lines above it.
+        if (totals.Days > 1)
+        {
+            Console.WriteLine();
+            Console.Write(totals);
         }
     }
 }

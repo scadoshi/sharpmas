@@ -9,8 +9,7 @@ public static class FetchRun
     /// <summary>Fills the cache for every day the filters allow.</summary>
     /// <remarks>
     /// Files on disk are left alone, and one failed download stops the rest,
-    /// since a failure is usually a bad cookie and retrying would just repeat
-    /// it against the site.
+    /// since a failure is usually a bad cookie.
     /// </remarks>
     public static async Task Run(FetchArgs args)
     {

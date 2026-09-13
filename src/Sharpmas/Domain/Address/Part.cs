@@ -31,6 +31,16 @@ public static class PartExtensions
                 Part.Two => "2",
                 _ => throw new ArgumentOutOfRangeException(nameof(part), part, null),
             };
+
+        /// <summary>The word the output reads, <c>one</c> or <c>two</c>.</summary>
+        /// <remarks><see cref="WireValue"/> is the one to send to a service.</remarks>
+        public string Word =>
+            part switch
+            {
+                Part.One => "one",
+                Part.Two => "two",
+                _ => throw new ArgumentOutOfRangeException(nameof(part), part, null),
+            };
     }
 
     extension(Part)

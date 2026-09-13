@@ -11,14 +11,12 @@ public static class Inputs
 {
     /// <summary>Returns a day's cached entry, downloading whatever is missing.</summary>
     /// <remarks>
-    /// A cache with no part two counts as incomplete and is rechecked every run,
-    /// since part two unlocks only once part one is solved. An input from
-    /// another session is refetched, keeping its instructions.
+    /// A missing part two means incomplete, so it is rechecked every run until
+    /// part one is solved. An input from another session is refetched.
     /// </remarks>
     public static async Task<Entry> EnsureEntry(LazyAocClient client, Day day)
     {
-        // Absent when no cookie is configured, which leaves a cached entry
-        // usable rather than unverifiable and therefore unusable.
+        // Absent when no cookie is configured, leaving a cached entry usable.
         var cookie = Environment.CookieIfSet();
         var cached = Store.ReadEntry(day);
 
@@ -35,8 +33,7 @@ public static class Inputs
         }
 
         var staleSession = cookie is not null && !cached.Input.IsFrom(cookie);
-        // No cookie means nothing to ask with, so an incomplete cache stays as
-        // it is rather than failing the run.
+        // No cookie means nothing to ask with, so an incomplete cache stays.
         var chasePartTwo =
             cached.Instructions.PartTwo is null && day.HasSecondPuzzle && cookie is not null;
 
