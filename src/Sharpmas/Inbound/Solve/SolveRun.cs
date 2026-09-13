@@ -50,6 +50,7 @@ public static class SolveRun
             client.Connected();
         }
 
+        var totals = new Totals();
         foreach (var day in Day.Matching(new Filter(args.Year, args.Day)))
         {
             // Asked before fetching, so unsolvable days download nothing.
@@ -100,6 +101,15 @@ public static class SolveRun
             );
             Console.WriteLine($"  part one: {solved.PartOne}");
             Console.WriteLine($"  part two: {solved.PartTwo}");
+
+            totals.Add(day, solved);
+        }
+
+        // Below two days the summary would only restate the lines above it.
+        if (totals.Days > 1)
+        {
+            Console.WriteLine();
+            Console.Write(totals);
         }
     }
 }

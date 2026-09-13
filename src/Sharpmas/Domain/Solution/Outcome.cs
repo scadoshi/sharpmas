@@ -59,6 +59,21 @@ public record Outcome
         };
     }
 
+    /// <summary>How long this part took, if it produced an answer.</summary>
+    /// <remarks>
+    /// Null for a stub, a failure, and day 25's second star, none of which did
+    /// work worth totalling.
+    /// </remarks>
+    public TimeSpan? SolveTime =>
+        AnswerResult switch
+        {
+            AnswerResult.Ok(Answer.Value or Answer.Visual) => Elapsed,
+            AnswerResult.Ok(_) or AnswerResult.Err(_) => null,
+            _ => throw new UnreachableException(
+                $"unhandled {nameof(AnswerResult)}: {AnswerResult.GetType().Name}"
+            ),
+        };
+
     /// <summary>Attaches a solver verdict if there is something to check.</summary>
     /// <remarks>
     /// Non-destructive, like every other <c>With</c> in .NET: the receiver is
