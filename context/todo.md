@@ -4,8 +4,8 @@
 
 The tool is finished and works end to end, live. It matches rustmas feature for
 feature: the catch-up that had been queued since 2026-08-20 closed on
-2026-08-23, written on the flight to London. 121 tests pass and the build is
-clean with no warnings.
+2026-08-23, written on the flight to London. The run summary ported across on
+2026-09-13. 127 tests pass and the build is clean with no warnings.
 
 Two days are written, 2015 day 1 and 2016 day 1, all four answers confirmed by
 the solver and matching rustmas. `Common/` is fully ported: `Cell`, `Direction`,
@@ -19,7 +19,7 @@ tool, an empty `Common/`, and the day template.
 ```
 Domain/Address/      Year, Day, Part, Filter
 Domain/Solution/     Answer, AnswerResult, AocVerdict, SolverVerdict,
-                     Outcome, Solved, ISolution, Common/,
+                     Outcome, Solved, Totals, ISolution, Common/,
                      Year2015/Day01, Year2016/Day01
 Inbound/             Cli, Inputs, Fetch/, Solve/ with the day registry
 Outbound/Client/     Environment, AocClient, LazyAocClient, SolverClient,
@@ -52,6 +52,17 @@ Listed here only because this file had carried them as pending since the 20th.
 - `LazyAocClient` moved beside `AocClient`.
 - The `SolveRun`/`FetchRun` shape check against rustmas's run-fold, which came
   back empty as predicted.
+
+## Closed on 2026-09-13
+
+Detail in [`progress/journal/2026-09-13.md`](progress/journal/2026-09-13.md).
+
+- `Totals`, `Outcome.SolveTime`, and `Part.Word`, wired into `SolveRun` and
+  printed only when more than one day ran.
+- A comment pass across the repo, 42 lines shorter.
+
+Both are tool changes sitting on `scadoshi`, so they still need moving to
+`main` and merging down, per `rules/branches.md`.
 
 ## Next
 
