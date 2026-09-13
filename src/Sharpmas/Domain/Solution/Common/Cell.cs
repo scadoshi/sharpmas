@@ -2,12 +2,9 @@ namespace Sharpmas.Domain.Solution.Common;
 
 /// <summary>An unsigned grid index, rows counting down from the top left.</summary>
 /// <remarks>
-/// So <c>Up</c> decreases the row, the opposite of <see cref="Point"/>, which is
-/// what to use for signed coordinates on an unbounded plane. Picking the wrong
-/// one flips the vertical axis, so a correct walk gives a wrong answer.
-///
-/// A record struct, so two cells at the same index are equal and hash alike
-/// without any of it being written by hand.
+/// So <c>Up</c> decreases the row, the opposite of <see cref="Point"/>. Picking
+/// the wrong one flips the vertical axis, so a correct walk gives a wrong
+/// answer.
 /// </remarks>
 public record struct Cell(uint Row, uint Column)
 {

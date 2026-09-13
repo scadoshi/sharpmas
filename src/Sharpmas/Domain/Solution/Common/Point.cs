@@ -2,12 +2,9 @@ namespace Sharpmas.Domain.Solution.Common;
 
 /// <summary>A signed position on the cartesian plane, y growing upward.</summary>
 /// <remarks>
-/// A record struct, so two points at the same place are equal and hash alike
-/// without any of it being written by hand. That is what lets a walk record
-/// where it has been in a <see cref="HashSet{T}"/>.
-///
-/// For row and column indices into a grid, a separate cell type counts rows
-/// downward instead.
+/// A record struct, so two points at the same place are equal and hash alike,
+/// which is what lets a walk record where it has been in a
+/// <see cref="HashSet{T}"/>. For grid indices use <see cref="Cell"/> instead.
 /// </remarks>
 public readonly record struct Point(int X, int Y)
 {

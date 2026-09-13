@@ -4,10 +4,9 @@ namespace Sharpmas.Domain.Solution.Common;
 
 /// <summary>A quarter turn, either way.</summary>
 /// <remarks>
-/// Separate from <see cref="Direction"/> so that nothing has to accept
-/// <c>Up</c> and <c>Down</c> where they name no turn. An instruction reading
-/// <c>U3</c> parsed as a direction turns nowhere and walks three, which is a
-/// bug this type exists to make unspellable.
+/// Separate from <see cref="Direction"/> so nothing has to accept <c>Up</c> and
+/// <c>Down</c> where they name no turn. <c>U3</c> parsed as a direction turns
+/// nowhere and walks three, which this type makes unspellable.
 /// </remarks>
 public enum Turn
 {

@@ -4,11 +4,8 @@ namespace Sharpmas.Domain.Solution.Common;
 
 /// <summary>One of the four moves along an axis.</summary>
 /// <remarks>
-/// <c>Up</c> and <c>Down</c> mean opposite things to the two position types:
-/// a point counts y upward, a grid cell counts rows down from the top.
-///
-/// Declared clockwise, which is what makes a right turn one step along the list
-/// and a left turn one step back.
+/// <c>Up</c> and <c>Down</c> mean opposite things to a point and a grid cell.
+/// Declared clockwise, which is what makes a turn one step along the list.
 /// </remarks>
 public enum Direction
 {
