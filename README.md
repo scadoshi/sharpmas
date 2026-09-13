@@ -7,6 +7,8 @@ This is Scotty's working branch, with his solutions attached. The `main` branch
 is the same tool with no solutions, which is the one to clone if you want a
 starting point.
 
+![rustmas and sharpmas side by side on the same puzzle, same answers, different timings](demo/demo.gif)
+
 ## Quick start
 
 **1. Add your session cookie.** Log in at
