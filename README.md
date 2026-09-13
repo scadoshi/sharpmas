@@ -6,6 +6,8 @@ checks the answers against an independent solver, and submits them for stars.
 No solutions ship with it. Clone it, add your `.env`, and write your first day.
 Scotty's own solutions live on the `scadoshi` branch if you want worked examples.
 
+![rustmas and sharpmas side by side on the same puzzle, same answers, different timings](demo/demo.gif)
+
 ## Quick start
 
 **1. Add your session cookie.** Log in at
