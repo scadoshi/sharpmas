@@ -9,10 +9,9 @@ public static class SolveUtils
 {
     /// <summary>Submits the answer if the solver backed it, with AOC's reply attached.</summary>
     /// <remarks>
-    /// A wrong answer costs an escalating cooldown, so the solver verdict gates
-    /// the send. An unsupported puzzle goes through anyway, since the solver
-    /// cannot judge it either way and that is the live-event case where being
-    /// ahead of it is exactly when submitting matters.
+    /// A wrong answer costs an escalating cooldown, so the verdict gates the
+    /// send. An unsupported puzzle goes through anyway, which is the live-event
+    /// case where being ahead of the solver is exactly when submitting matters.
     /// </remarks>
     public static async Task<Outcome> Submit(
         AocClient aoc,

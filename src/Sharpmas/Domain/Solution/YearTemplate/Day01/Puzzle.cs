@@ -2,12 +2,9 @@ namespace Sharpmas.Domain.Solution.YearTemplate.Day01;
 
 /// <summary>A day, ready to be filled in. Copy the folder, rename the namespace.</summary>
 /// <remarks>
-/// Compiled on every build but never registered, so copying it starts from
-/// something that cannot have drifted from <see cref="ISolution{TSelf}"/>. A
-/// template that only lives in a README goes stale without anyone noticing.
-///
-/// See the repo README for the two steps: write the day, then add a line to
-/// <c>Solvers</c> in <c>Inbound/Solve/SolveRun.cs</c>.
+/// Compiled but never registered, so a copy starts from something that cannot
+/// have drifted from <see cref="ISolution{TSelf}"/>. Write the day, then add a
+/// line to <c>Solvers</c> in <c>Inbound/Solve/SolveRun.cs</c>.
 /// </remarks>
 public class Puzzle : ISolution<Puzzle>
 {

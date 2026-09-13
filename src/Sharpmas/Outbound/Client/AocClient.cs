@@ -28,9 +28,9 @@ public class AocClient
 
     /// <summary>Builds a client carrying the cookie and User-Agent on every request.</summary>
     /// <remarks>
-    /// Both headers go on the client rather than each request, so nothing can
-    /// send one without them. Only COOKIE is required, so a fresh clone runs
-    /// without the rest.
+    /// Both headers go on the client, so nothing can send a request without
+    /// them. Only <c>COOKIE</c> is required, so a fresh clone runs without the
+    /// rest.
     /// </remarks>
     public AocClient()
     {
@@ -49,9 +49,8 @@ public class AocClient
     /// <summary>Fetches a day's puzzle text, rendered from HTML.</summary>
     /// <remarks>
     /// The page holds one article per unlocked part, so counting them says which
-    /// parts exist. Part two is null until part one is solved. Splitting on the
-    /// markup rather than on prose means no phrase has to be matched and no flag
-    /// can disagree with the text beside it.
+    /// parts exist and part two is null until part one is solved. Splitting on
+    /// markup rather than prose means no phrase has to be matched.
     /// </remarks>
     public async Task<(string One, string? Two)> GetInstructions(Day day)
     {
@@ -87,9 +86,8 @@ public class AocClient
 
     /// <summary>Submits an answer and reads the graded reply.</summary>
     /// <remarks>
-    /// Everything comes back 200, so the verdict is entirely in the body. A part
-    /// grades once: a second correct answer reports as already solved rather
-    /// than confirming again.
+    /// Everything comes back 200, so the verdict is entirely in the body. A
+    /// part grades once, which is why a correct answer is worth caching.
     /// </remarks>
     public async Task<AocVerdict> SubmitAnswer(Day day, Part part, string answer)
     {

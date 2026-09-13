@@ -14,14 +14,10 @@ public static class Solver
     /// <summary>Runs both parts, checking each answer against the solver when asked.</summary>
     /// <remarks>
     /// Validation runs after both parts are measured, so no timing includes a
-    /// network round trip, and only a submittable answer is checked at all.
-    ///
-    /// A failing part goes into its own outcome rather than being propagated, so
-    /// the other part still runs. Only a failure to parse ends the day, which is
-    /// why that call sits outside the catch.
-    ///
-    /// Generic because a static interface member has nothing to dispatch on, so
-    /// <c>T.Parse</c> is reachable only through a type parameter.
+    /// network round trip. A failing part goes into its own outcome, so the
+    /// other still runs; only a failure to parse ends the day, which is why
+    /// that call sits outside the catch. Generic because a static interface
+    /// member has nothing to dispatch on.
     /// </remarks>
     public static async Task<Solved> Solve<T>(
         SolverClient client,

@@ -5,8 +5,7 @@ namespace Sharpmas.Tests.Outbound.Client;
 
 public class VerdictFromTests
 {
-    // Fixtures are the real replies AOC gave for 2015 day 1 on a scratch
-    // account, trimmed to the sentence that carries the verdict.
+    // Real replies AOC gave for 2015 day 1, trimmed to the verdict sentence.
     const string Correct =
         "That's the right answer!  You are <span class=\"day-success\">one gold star</span> "
         + "closer to powering the weather machine.";

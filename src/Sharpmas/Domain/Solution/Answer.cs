@@ -36,9 +36,8 @@ public abstract record Answer
 
     /// <summary>The submittable text, if there is any.</summary>
     /// <remarks>
-    /// The one question the rest of the tool asks an answer. Returning null for
-    /// the other cases is what stops art or an absent answer being validated or
-    /// submitted.
+    /// Returning null for the other cases is what stops art or an absent answer
+    /// being validated or submitted.
     /// </remarks>
     public string? GetValue()
     {

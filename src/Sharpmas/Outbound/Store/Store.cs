@@ -4,17 +4,8 @@ namespace Sharpmas.Outbound.Store;
 
 /// <summary>Where downloaded things live on disk.</summary>
 /// <remarks>
-/// One directory per day, every file readable on its own:
-///
-/// <code>
-/// cache/2015/01/input.txt     the puzzle input, verbatim
-/// cache/2015/01/session       hash of the cookie that fetched it
-/// cache/2015/01/part_one.md   puzzle text
-/// cache/2015/01/part_two.md   puzzle text, absent until part one is solved
-/// </code>
-///
-/// Plain files rather than one structured document, because an input and a page
-/// of puzzle text both read badly escaped onto a single JSON line.
+/// One directory per day, every file readable on its own, which a single JSON
+/// document would not be. <c>context/architecture.md</c> has the layout.
 /// </remarks>
 public static class Store
 {
@@ -30,9 +21,8 @@ public static class Store
 
     /// <summary>Reads a day's cache, or null when nothing has been downloaded.</summary>
     /// <remarks>
-    /// Returns what is on disk whatever session it came from, but a missing
-    /// session file reads as null: an input nothing can vouch for is one to
-    /// fetch again.
+    /// A missing session file reads as null, since an input nothing can vouch
+    /// for is one to fetch again.
     /// </remarks>
     public static Entry? ReadEntry(Day day) => ReadEntryIn(Paths.CacheRoot, day);
 
