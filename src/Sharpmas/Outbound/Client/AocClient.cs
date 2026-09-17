@@ -127,11 +127,16 @@ public class AocClient
     /// <summary>Classifies AOC's HTML reply to a submission.</summary>
     /// <remarks>
     /// Direction is checked before the generic wrong-answer phrase, since a
-    /// "too high" reply contains that phrase too. Strings verified live; see
-    /// rustmas/context/references.md.
+    /// "too high" reply contains that phrase too. A logged-out submission
+    /// redirects to the puzzle page, which grades nothing, so that is checked
+    /// first. Strings verified live; see rustmas/context/references.md.
     /// </remarks>
     internal static AocVerdict VerdictFrom(string body)
     {
+        if (body.Contains("auth/login"))
+        {
+            return new AocVerdict.NotLoggedIn();
+        }
         if (body.Contains("That's the right answer"))
         {
             return new AocVerdict.Correct();

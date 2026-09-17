@@ -31,6 +31,9 @@ public abstract record AocVerdict
     /// <summary>The part is already solved, so nothing was graded.</summary>
     public sealed record AlreadySolved : AocVerdict;
 
+    /// <summary>The session cookie is missing or expired, so nothing was graded.</summary>
+    public sealed record NotLoggedIn : AocVerdict;
+
     /// <summary>How the verdict reads in a part's output line.</summary>
     /// <remarks>
     /// Sealed so the cases cannot generate their own, which would silently
@@ -46,6 +49,7 @@ public abstract record AocVerdict
             High => "high",
             Cooldown(string wait) => $"rate limited, {wait} left to wait",
             AlreadySolved => "already solved",
+            NotLoggedIn => "not logged in",
             _ => throw new UnreachableException(
                 $"unhandled {nameof(AocVerdict)}: {GetType().Name}"
             ),

@@ -24,6 +24,11 @@ public class VerdictFromTests
     const string Solved =
         "You don't seem to be solving the right level.  Did you already complete it?";
 
+    // The nav of the puzzle page a logged-out submission redirects to.
+    const string LoggedOut =
+        "<li><a href=\"/2016/auth/login\">[Log In]</a></li></ul></nav></div>"
+        + "<div><h1 class=\"title-event\">";
+
     [Fact]
     public void ClassifiesReplies()
     {
@@ -33,6 +38,17 @@ public class VerdictFromTests
         Assert.IsType<AocVerdict.Incorrect>(AocClient.VerdictFrom(Wrong));
         Assert.IsType<AocVerdict.AlreadySolved>(AocClient.VerdictFrom(Solved));
         Assert.IsType<AocVerdict.Cooldown>(AocClient.VerdictFrom(Cooldown));
+        Assert.IsType<AocVerdict.NotLoggedIn>(AocClient.VerdictFrom(LoggedOut));
+    }
+
+    /// <summary>A graded reply never carries the login link, so no verdict is stolen.</summary>
+    [Fact]
+    public void LoggedOutDoesNotShadowARealVerdict()
+    {
+        foreach (var body in new[] { Correct, High, Low, Wrong, Cooldown, Solved })
+        {
+            Assert.IsNotType<AocVerdict.NotLoggedIn>(AocClient.VerdictFrom(body));
+        }
     }
 
     /// <summary>A directional reply also contains the generic phrase, so order matters.</summary>
