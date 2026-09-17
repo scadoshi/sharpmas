@@ -74,16 +74,21 @@ public static class Environment
     /// <summary>The session cookie, or null when it is unset or blank.</summary>
     /// <remarks>
     /// For callers that can work offline, where no cookie means skip the
-    /// network rather than fail.
+    /// network rather than fail. A value that is set but malformed throws
+    /// rather than reading as unset.
     /// </remarks>
-    public static string? CookieIfSet() => Get(CookieKey);
+    public static SessionCookie? CookieIfSet()
+    {
+        var raw = Get(CookieKey);
+        return raw is null ? null : SessionCookie.Parse(raw);
+    }
 
     /// <summary>The session cookie, required.</summary>
     /// <remarks>
     /// The pair exists so the requirement is named here rather than at every
     /// call site, and so a run that needs no network never asks.
     /// </remarks>
-    public static string Cookie()
+    public static SessionCookie Cookie()
     {
         return CookieIfSet()
             ?? throw new InvalidOperationException($"{CookieKey} is not set; add it to .env");
