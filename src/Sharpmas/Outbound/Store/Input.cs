@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using Sharpmas.Outbound.Client;
 
 namespace Sharpmas.Outbound.Store;
 
@@ -25,17 +26,18 @@ public sealed class Input
     }
 
     /// <summary>A freshly downloaded input, tagged with the session that got it.</summary>
-    public static Input Fetched(string cookie, string data) => new(HashCookie(cookie), data);
+    public static Input Fetched(SessionCookie cookie, string data) =>
+        new(HashCookie(cookie), data);
 
     /// <summary>Rebuilt from disk, where the hash was already generated.</summary>
     public static Input FromParts(string hash, string data) => new(hash, data);
 
     /// <summary>Whether this input was fetched with the given cookie.</summary>
-    public bool IsFrom(string cookie) => Hash == HashCookie(cookie);
+    public bool IsFrom(SessionCookie cookie) => Hash == HashCookie(cookie);
 
-    static string HashCookie(string cookie)
+    static string HashCookie(SessionCookie cookie)
     {
-        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(cookie));
+        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(cookie.Value));
         return Convert.ToHexString(digest).ToLowerInvariant();
     }
 }

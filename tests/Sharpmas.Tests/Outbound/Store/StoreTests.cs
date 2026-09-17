@@ -1,4 +1,5 @@
 using Sharpmas.Domain.Address;
+using Sharpmas.Outbound.Client;
 using Sharpmas.Outbound.Store;
 
 // Aliased because this test namespace ends in Store, and outside a namespace
@@ -7,31 +8,40 @@ using Cache = Sharpmas.Outbound.Store.Store;
 
 namespace Sharpmas.Tests.Outbound.Store;
 
+/// <summary>A parseable cookie standing in for a real one.</summary>
+static class Cookies
+{
+    public static SessionCookie Of(char fill) =>
+        SessionCookie.Parse(new string(fill, SessionCookie.Length));
+}
+
 public class InputTests
 {
+
     [Fact]
     public void RecognisesItsOwnSession()
     {
-        var input = Input.Fetched("cookie-a", "()()");
-        Assert.True(input.IsFrom("cookie-a"));
-        Assert.False(input.IsFrom("cookie-b"));
+        var input = Input.Fetched(Cookies.Of('a'), "()()");
+        Assert.True(input.IsFrom(Cookies.Of('a')));
+        Assert.False(input.IsFrom(Cookies.Of('b')));
     }
 
     /// <summary>The cookie itself never reaches disk, only a digest of it.</summary>
     [Fact]
     public void StoresADigestRatherThanTheCookie()
     {
-        var input = Input.Fetched("secret", "()()");
-        Assert.DoesNotContain("secret", input.Hash);
+        var cookie = Cookies.Of('c');
+        var input = Input.Fetched(cookie, "()()");
+        Assert.DoesNotContain(cookie.Value, input.Hash);
         Assert.Equal(64, input.Hash.Length);
     }
 
     [Fact]
     public void FromPartsKeepsTheStoredHash()
     {
-        var written = Input.Fetched("cookie", "()()");
+        var written = Input.Fetched(Cookies.Of('d'), "()()");
         var read = Input.FromParts(written.Hash, written.Data);
-        Assert.True(read.IsFrom("cookie"));
+        Assert.True(read.IsFrom(Cookies.Of('d')));
     }
 }
 
@@ -54,7 +64,7 @@ public class StoreTests : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    static Entry Entry(string cookie, string? partTwo = "## two") =>
+    static Entry Entry(SessionCookie cookie, string? partTwo = "## two") =>
         new()
         {
             Input = Input.Fetched(cookie, "()()"),
@@ -66,12 +76,12 @@ public class StoreTests : IDisposable
     {
         Assert.Null(Cache.ReadEntryIn(root, day));
 
-        Cache.WriteEntryIn(root, day, Entry("cookie"));
+        Cache.WriteEntryIn(root, day, Entry(Cookies.Of('d')));
         var read = Cache.ReadEntryIn(root, day);
 
         Assert.NotNull(read);
         Assert.Equal("()()", read.Input.Data);
-        Assert.True(read.Input.IsFrom("cookie"));
+        Assert.True(read.Input.IsFrom(Cookies.Of('d')));
         Assert.Equal("## one", read.Instructions.PartOne);
         Assert.Equal("## two", read.Instructions.PartTwo);
     }
@@ -80,14 +90,14 @@ public class StoreTests : IDisposable
     [Fact]
     public void PadsTheDay()
     {
-        Cache.WriteEntryIn(root, day, Entry("cookie"));
+        Cache.WriteEntryIn(root, day, Entry(Cookies.Of('d')));
         Assert.True(Directory.Exists(Path.Combine(root, "2015", "01")));
     }
 
     [Fact]
     public void MissingPartTwoReadsAsNull()
     {
-        Cache.WriteEntryIn(root, day, Entry("cookie", partTwo: null));
+        Cache.WriteEntryIn(root, day, Entry(Cookies.Of('d'), partTwo: null));
         Assert.Null(Cache.ReadEntryIn(root, day)!.Instructions.PartTwo);
     }
 
@@ -95,7 +105,7 @@ public class StoreTests : IDisposable
     [Fact]
     public void BlankPartTwoReadsAsMissing()
     {
-        Cache.WriteEntryIn(root, day, Entry("cookie"));
+        Cache.WriteEntryIn(root, day, Entry(Cookies.Of('d')));
         File.WriteAllText(Path.Combine(root, "2015", "01", "part_two.md"), "  \n");
         Assert.Null(Cache.ReadEntryIn(root, day)!.Instructions.PartTwo);
     }
@@ -104,7 +114,7 @@ public class StoreTests : IDisposable
     [Fact]
     public void EntryWithoutASessionReadsAsMissing()
     {
-        Cache.WriteEntryIn(root, day, Entry("cookie"));
+        Cache.WriteEntryIn(root, day, Entry(Cookies.Of('d')));
         File.Delete(Path.Combine(root, "2015", "01", "session"));
         Assert.Null(Cache.ReadEntryIn(root, day));
     }

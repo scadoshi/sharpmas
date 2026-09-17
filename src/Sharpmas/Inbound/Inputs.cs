@@ -65,7 +65,7 @@ public static class Inputs
     }
 
     /// <summary>Downloads a day's input and tags it with the session that got it.</summary>
-    static async Task<Input> FetchInput(LazyAocClient client, Day day, string? cookie)
+    static async Task<Input> FetchInput(LazyAocClient client, Day day, SessionCookie? cookie)
     {
         var data = await client.Connected().GetInput(day);
         return Input.Fetched(cookie ?? Environment.Cookie(), data);

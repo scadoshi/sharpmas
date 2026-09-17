@@ -22,7 +22,7 @@ public class AocClient
     /// Kept as a value, not only as a header, because cached inputs record
     /// which session fetched them and that check needs something to compare.
     /// </remarks>
-    public string Cookie { get; }
+    public SessionCookie Cookie { get; }
 
     public HttpClient Client { get; }
 

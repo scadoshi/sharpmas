@@ -8,11 +8,11 @@ public static class Environment
     const string CookieKey = "COOKIE";
     const string UnconfiguredUserAgent = "sharpmas (unconfigured; set CONTACT in .env)";
 
-    /// <summary>Reads .env into the environment; already-set variables win.</summary>
+    /// <summary>Reads .env into the environment, overwriting what is there.</summary>
     /// <remarks>
-    /// An exported variable beats the file, which is what makes a one-off
-    /// override on the command line work. A missing file is ordinary, since
-    /// <c>.env</c> is gitignored.
+    /// The file wins, so editing it always takes effect. A stale export
+    /// otherwise masks it silently, which reads as the tool ignoring the edit.
+    /// A missing file is ordinary, since <c>.env</c> is gitignored.
     /// </remarks>
     static void LoadEnvFile()
     {
@@ -35,10 +35,7 @@ public static class Environment
             var parts = line.Split("=", 2);
             var key = parts[0].Trim();
             var value = parts[1].Trim();
-            if (System.Environment.GetEnvironmentVariable(key) is null)
-            {
-                System.Environment.SetEnvironmentVariable(key, value);
-            }
+            System.Environment.SetEnvironmentVariable(key, value);
         }
     }
 
@@ -77,16 +74,21 @@ public static class Environment
     /// <summary>The session cookie, or null when it is unset or blank.</summary>
     /// <remarks>
     /// For callers that can work offline, where no cookie means skip the
-    /// network rather than fail.
+    /// network rather than fail. A value that is set but malformed throws
+    /// rather than reading as unset.
     /// </remarks>
-    public static string? CookieIfSet() => Get(CookieKey);
+    public static SessionCookie? CookieIfSet()
+    {
+        var raw = Get(CookieKey);
+        return raw is null ? null : SessionCookie.Parse(raw);
+    }
 
     /// <summary>The session cookie, required.</summary>
     /// <remarks>
     /// The pair exists so the requirement is named here rather than at every
     /// call site, and so a run that needs no network never asks.
     /// </remarks>
-    public static string Cookie()
+    public static SessionCookie Cookie()
     {
         return CookieIfSet()
             ?? throw new InvalidOperationException($"{CookieKey} is not set; add it to .env");
