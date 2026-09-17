@@ -20,28 +20,28 @@ public sealed class Filter
         switch (year, day)
         {
             case (int y, int d):
-            {
-                Year = new Year(y);
-                _ = new Day(Year, d);
-                Day = d;
-                break;
-            }
+                {
+                    Year = new Year(y);
+                    _ = new Day(Year, d);
+                    Day = d;
+                    break;
+                }
             case (int y, null):
-            {
-                Year = new Year(y);
-                break;
-            }
+                {
+                    Year = new Year(y);
+                    break;
+                }
             case (null, int d):
-            {
-                ArgumentOutOfRangeException.ThrowIfLessThan(d, 1, nameof(d));
-                ArgumentOutOfRangeException.ThrowIfGreaterThan(d, Address.Day.FinalDay, nameof(d));
-                Day = d;
-                break;
-            }
+                {
+                    ArgumentOutOfRangeException.ThrowIfLessThan(d, 1, nameof(d));
+                    ArgumentOutOfRangeException.ThrowIfGreaterThan(d, Address.Day.FinalDay, nameof(d));
+                    Day = d;
+                    break;
+                }
             case (null, null):
-            {
-                break;
-            }
+                {
+                    break;
+                }
         }
     }
 }
