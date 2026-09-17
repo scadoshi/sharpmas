@@ -8,11 +8,11 @@ public static class Environment
     const string CookieKey = "COOKIE";
     const string UnconfiguredUserAgent = "sharpmas (unconfigured; set CONTACT in .env)";
 
-    /// <summary>Reads .env into the environment; already-set variables win.</summary>
+    /// <summary>Reads .env into the environment, overwriting what is there.</summary>
     /// <remarks>
-    /// An exported variable beats the file, which is what makes a one-off
-    /// override on the command line work. A missing file is ordinary, since
-    /// <c>.env</c> is gitignored.
+    /// The file wins, so editing it always takes effect. A stale export
+    /// otherwise masks it silently, which reads as the tool ignoring the edit.
+    /// A missing file is ordinary, since <c>.env</c> is gitignored.
     /// </remarks>
     static void LoadEnvFile()
     {
@@ -35,10 +35,7 @@ public static class Environment
             var parts = line.Split("=", 2);
             var key = parts[0].Trim();
             var value = parts[1].Trim();
-            if (System.Environment.GetEnvironmentVariable(key) is null)
-            {
-                System.Environment.SetEnvironmentVariable(key, value);
-            }
+            System.Environment.SetEnvironmentVariable(key, value);
         }
     }
 
