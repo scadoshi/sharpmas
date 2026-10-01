@@ -9,8 +9,8 @@ below exist only here.
   day, with [`progress/journal.md`](progress/journal.md) saying how they are
   ordered. The latest entries list the C# facts learned so far, worth skimming
   before answering a language question.
-- [`rules/`](rules/) is binding when working here: commit guidelines, doc
-  comment style, and the branch model. On this branch only, since the rules are
+- [`rules/`](rules/) is binding when working here: commit guidelines, comment
+  guidelines, doc comment style, and the branch model. On this branch only, since the rules are
   the owner's.
 
 - [`architecture.md`](architecture.md) is the layout, how a solve runs, and the
