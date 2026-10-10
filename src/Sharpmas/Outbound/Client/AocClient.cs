@@ -17,6 +17,17 @@ public class AocClient
 
     static readonly Uri AocBaseUrl = new("https://adventofcode.com");
 
+    /// <summary>Least time between two requests.</summary>
+    /// <remarks>
+    /// adventofcode.com throttles a client that fetches back to back (a 405,
+    /// then a 403 for a while), and asks for one request per puzzle at a
+    /// human pace.
+    /// </remarks>
+    static readonly TimeSpan RequestGap = TimeSpan.FromMilliseconds(1500);
+
+    /// <summary>When the last request went out, for <see cref="RequestGap"/>.</summary>
+    DateTime? lastRequest;
+
     /// <summary>The cookie this client authenticates with.</summary>
     /// <remarks>
     /// Kept as a value, not only as a header, because cached inputs record
@@ -44,6 +55,38 @@ public class AocClient
             Environment.UserAgent()
         );
         Client = client;
+    }
+
+    /// <summary>Waits out the rest of <see cref="RequestGap"/> since the last request.</summary>
+    async Task Pace()
+    {
+        if (lastRequest is { } last)
+        {
+            var remaining = RequestGap - (DateTime.UtcNow - last);
+            if (remaining > TimeSpan.Zero)
+            {
+                await Task.Delay(remaining);
+            }
+        }
+        lastRequest = DateTime.UtcNow;
+    }
+
+    /// <summary>Throws unless the status is a success, saying what the status means.</summary>
+    /// <remarks>
+    /// 403 and 405 are adventofcode.com refusing a client it has taken for a
+    /// scraper; the fix is to wait, not to retry.
+    /// </remarks>
+    static void EnsureAccepted(HttpResponseMessage response, string what)
+    {
+        var status = (int)response.StatusCode;
+        if (status is 403 or 405)
+        {
+            throw new InvalidOperationException(
+                $"adventofcode.com refused {what} with HTTP {status}: it throttles bulk "
+                    + "fetching. Wait a while, then fetch one year at a time (fetch -y <year>)"
+            );
+        }
+        response.EnsureSuccessStatusCode();
     }
 
     /// <summary>Fetches a day's puzzle text, rendered from HTML.</summary>
@@ -99,8 +142,9 @@ public class AocClient
             ]
         );
 
+        await Pace();
         var response = await Client.PostAsync(url, form);
-        response.EnsureSuccessStatusCode();
+        EnsureAccepted(response, $"the answer for year {day.Year} day {day.Value}");
         var body = await response.Content.ReadAsStringAsync();
         return VerdictFrom(body);
     }
@@ -114,8 +158,9 @@ public class AocClient
     {
         try
         {
+            await Pace();
             var response = await Client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
+            EnsureAccepted(response, what);
             return await response.Content.ReadAsStringAsync();
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException)
