@@ -37,7 +37,7 @@ public abstract record SolverVerdict
     /// <summary>A verdict from comparing our answer against the solver's.</summary>
     /// <remarks>
     /// Read from our side, so a negative comparison means ours was the low one.
-    /// Normalised through <see cref="Math.Sign(int)"/> because a comparison only
+    /// Normalized through <see cref="Math.Sign(int)"/> because a comparison only
     /// promises a sign, never a particular value.
     /// </remarks>
     public static SolverVerdict From(int comparison)
