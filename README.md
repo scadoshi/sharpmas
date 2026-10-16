@@ -8,44 +8,52 @@ No solutions ship with it. Scotty's own are on the `scadoshi` branch if you want
 
 ## Quick start
 
-Copy your `session` cookie from [adventofcode.com](https://adventofcode.com) (browser dev tools) into `.env`:
+1. Copy your `session` cookie from [adventofcode.com](https://adventofcode.com) using your browser's dev tools.
+2. Paste it into `.env`:
 
-```sh
-cp .env.template .env    # paste the cookie into COOKIE=
-```
+   ```sh
+   cp .env.template .env    # paste the cookie into COOKIE=
+   ```
 
-Then run it. Keep the `--`, or `dotnet run` takes the flags as its own:
+3. Run it. Keep the `--`, or `dotnet run` takes the flags as its own:
 
-```sh
-alias sharpmas='dotnet run --project src/Sharpmas.Cli --'
+   ```sh
+   alias sharpmas='dotnet run --project src/Sharpmas.Cli --'
 
-sharpmas fetch -y 2015 -d 1              # download one puzzle into cache/
-sharpmas solve -y 2015 -d 1              # run your solution offline
-sharpmas solve -y 2015 -d 1 --validate   # check answers against the solver
-sharpmas solve -y 2015 -d 1 --submit     # check, then send for stars
-```
+   sharpmas fetch -y 2015 -d 1              # download one puzzle into cache/
+   sharpmas solve -y 2015 -d 1              # run your solution offline
+   sharpmas solve -y 2015 -d 1 --validate   # check answers against the solver
+   sharpmas solve -y 2015 -d 1 --submit     # check, then send for stars
+   ```
 
-Drop `-y` or `-d` to run all years or days. `--submit` only sends answers the solver agrees with, since wrong ones cost an escalating cooldown. Add `-c Release` after the project path on brute-force days.
+A few things to know:
+
+- Drop `-y` or `-d` to run every year or every day.
+- `--submit` holds back any answer the solver disagrees with, because wrong ones cost an escalating cooldown. A puzzle the solver can't check goes through anyway.
+- Add `-c Release` after the project path on brute-force days.
 
 ## Writing a day
 
-```sh
-cp -r src/Sharpmas/Domain/Solution/YearTemplate src/Sharpmas/Domain/Solution/Year2015
-```
+1. Copy the template year:
 
-Fix the namespace in `Day01/Puzzle.cs` to `Sharpmas.Domain.Solution.Year2015.Day01`. Each part returns `Answer.Solved(value)`, `Answer.Visual(art)`, or `Answer.None()`:
+   ```sh
+   cp -r src/Sharpmas/Domain/Solution/YearTemplate src/Sharpmas/Domain/Solution/Year2015
+   ```
 
-```csharp
-public Answer PartOne() => Answer.Solved(Input.Length.ToString());
-```
+2. Change the namespace in `Day01/Puzzle.cs` to `Sharpmas.Domain.Solution.Year2015.Day01`.
+3. Have each part return `Answer.Solved(value)`, `new Answer.Visual(art)`, or `new Answer.None()`:
 
-Register it in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
+   ```csharp
+   public Answer PartOne() => Answer.Solved(Input.Length.ToString());
+   ```
 
-```csharp
-[(2015, 1)] = Outbound.Client.Solver.Solve<Domain.Solution.Year2015.Day01.Puzzle>,
-```
+4. Register the day in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
 
-Helpers shared across days go in `Domain/Solution/Common/`.
+   ```csharp
+   [(2015, 1)] = Outbound.Client.Solver.Solve<Domain.Solution.Year2015.Day01.Puzzle>,
+   ```
+
+Put helpers that several days share in `Domain/Solution/Common/`.
 
 ## Reading the output
 
@@ -67,9 +75,9 @@ year 2015 day 1 in 950.7µs (35.5µs parsing)
 | `(none)` / `(unwritten)` | No answer exists (day 25 part two) / not written yet |
 | `error: ...` | The part failed; the other still ran |
 
-Multi-day runs finish with total and average parse and solve times. Timings never include the network.
+A multi-day run ends with total and average parse and solve times. Timings never include the network.
 
-Re-running `fetch` never re-downloads, and without a cookie `solve` and `--validate` still work offline. More in [`context/`](context/).
+Re-running `fetch` never downloads an input twice. Without a cookie, `solve` and `--validate` still work offline. More in [`context/`](context/).
 
 ## License
 
