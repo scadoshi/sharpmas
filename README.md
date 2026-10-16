@@ -1,7 +1,6 @@
 # sharpmas
 
-Advent of Code tooling in C#. Downloads your puzzle inputs, runs your solutions,
-checks the answers against an independent solver, and submits them for stars.
+Advent of Code tooling in C#, rebuilt from [rustmas](https://github.com/scadoshi/rustmas). It downloads your inputs, runs your solutions, checks the answers against an independent solver, and submits them for stars.
 
 This is Scotty's working branch, with his solutions attached. The `main` branch
 is the same tool with no solutions, which is the one to clone if you want a
@@ -11,20 +10,13 @@ starting point.
 
 ## Quick start
 
-**1. Add your session cookie.** Log in at
-[adventofcode.com](https://adventofcode.com), copy the value of the cookie named
-`session` from your browser's dev tools, then:
+Copy your `session` cookie from [adventofcode.com](https://adventofcode.com) (browser dev tools) into `.env`:
 
 ```sh
 cp .env.template .env    # paste the cookie into COOKIE=
 ```
 
-Only `COOKIE` is required, and it is 128 hex characters, checked on startup so
-a half-copied one says so. `CONTACT` and `REPO_URL` shape the `User-Agent`,
-since the site asks automated clients to be reachable.
-
-**2. Run something.** One binary, one subcommand per mode, and the `--` matters:
-without it `dotnet run` eats the flags as its own.
+Then run it. Keep the `--`, or `dotnet run` takes the flags as its own:
 
 ```sh
 alias sharpmas='dotnet run --project src/Sharpmas.Cli --'
@@ -35,26 +27,15 @@ sharpmas solve -y 2015 -d 1 --validate   # check answers against the solver
 sharpmas solve -y 2015 -d 1 --submit     # check, then send for stars
 ```
 
-`-y` and `-d` are filters: omit either for all of them. `--submit` validates
-first and only sends what the solver agrees with, because wrong answers cost an
-escalating cooldown. Unfiltered submits ask before posting everything; `--yes`
-skips that.
+Drop `-y` or `-d` to run all years or days. `--submit` only sends answers the solver agrees with, since wrong ones cost an escalating cooldown. Add `-c Release` after the project path on brute-force days.
 
-**3. Write a day.** Say 2015 day 1. Copy the template, which is compiled on
-every build and so cannot drift:
+## Writing a day
 
 ```sh
 cp -r src/Sharpmas/Domain/Solution/YearTemplate src/Sharpmas/Domain/Solution/Year2015
 ```
 
-Fix the namespace in the copied `Day01/Puzzle.cs` to match the path:
-
-```csharp
-namespace Sharpmas.Domain.Solution.Year2015.Day01;
-```
-
-Write the parts. `Parse` runs once and throws on bad input; each part returns
-`Answer.Solved(value)`, `Answer.Visual(art)`, or `Answer.None()`:
+Fix the namespace in `Day01/Puzzle.cs` to `Sharpmas.Domain.Solution.Year2015.Day01`. Each part returns `Answer.Solved(value)`, `Answer.Visual(art)`, or `Answer.None()`:
 
 ```csharp
 public Answer PartOne() => Answer.Solved(Input.Length.ToString());
@@ -66,11 +47,7 @@ Register it in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
 [(2015, 1)] = Outbound.Client.Solver.Solve<Domain.Solution.Year2015.Day01.Puzzle>,
 ```
 
-That dictionary is the only list of what has been solved. Then:
-
-```sh
-sharpmas solve -y 2015 -d 1 --validate
-```
+Helpers shared across days go in `Domain/Solution/Common/`.
 
 ## Reading the output
 
@@ -80,59 +57,21 @@ year 2015 day 1 in 950.7µs (35.5µs parsing)
   part two: 1771 (correct) [384.3µs]
 ```
 
-One line per part: the answer, what is known about it, and how long it took.
-Timings never include the network.
-
 | Note | Meaning |
 | --- | --- |
 | nothing | Solved offline, unchecked |
 | `correct` | The solver agrees |
 | `high`, `low`, `incorrect` | The solver disagrees, so nothing was submitted |
-| `new star` | Advent of Code just accepted it |
-| `starred` | Advent of Code says the part was already solved |
-| `not logged in` | The session cookie is missing or expired, so nothing was graded |
-| `unsupported` | The solver has no implementation for this puzzle |
-| `rate limited, 1m 0s left to wait` | Advent of Code refused to grade |
-| `(none)` | The part has no answer, such as day 25 part two |
-| `(unwritten)` | Nobody has written this part yet |
-| `error: ...` | The part failed. The other part still ran |
+| `new star` / `starred` | Accepted now / already solved |
+| `not logged in` | Cookie missing or expired |
+| `unsupported` | The solver can't do this puzzle |
+| `rate limited, ...` | Advent of Code refused to grade |
+| `(none)` / `(unwritten)` | No answer exists (day 25 part two) / not written yet |
+| `error: ...` | The part failed; the other still ran |
 
-A run covering more than one day ends with where the time went:
+Multi-day runs finish with total and average parse and solve times. Timings never include the network.
 
-```
-total time spent parsing: 687.8µs
-average parse time per day: 343.9µs
-total time spent solving: 2.5695ms
-average solve time per part: 642.4µs
-slowest part: year 2016 day 1 part two [776.3µs]
-```
-
-One day gets none of it, since every line would restate the line above it.
-
-## Worth knowing
-
-- Re-running `fetch` is safe: inputs are never re-downloaded, and a day still
-  waiting on part two is rechecked until it unlocks.
-- With no cookie set, `solve` works entirely offline from the cache, and
-  `--validate` still works, since the solver needs no account.
-- Shared helpers more than one day needs go in `Domain/Solution/Common/`.
-- Debug builds are slow on brute-force days;
-  `dotnet run --project src/Sharpmas.Cli -c Release -- solve ...` when it drags.
-
-## Going deeper
-
-`context/` holds the facts about the repo, one file per topic:
-
-- [`context/architecture.md`](context/architecture.md), the layout, how a solve
-  runs, and the cache on disk.
-- [`context/services.md`](context/services.md), the two services and the
-  etiquette the tool follows.
-- [`context/design.md`](context/design.md), every design decision in a line or
-  two each.
-
-[rustmas](https://github.com/scadoshi/rustmas) is the original this rebuilds;
-its `context/design/` and `references.md` carry the full reasoning and the
-service contracts as verified.
+Re-running `fetch` never re-downloads, and without a cookie `solve` and `--validate` still work offline. More in [`context/`](context/).
 
 ## License
 
