@@ -1,8 +1,6 @@
 # Architecture
 
-Ports and adapters. `Domain/` holds the puzzle types and imports nothing outside
-itself: no HTTP, no filesystem, no CLI. `Inbound/` is the way in, `Outbound/`
-is the way out, and each depends on the domain rather than the reverse.
+Ports and adapters. `Domain/` holds the puzzle types and imports nothing outside itself: no HTTP, no filesystem, no CLI. `Inbound/` is the way in, `Outbound/` is the way out, and each depends on the domain rather than the reverse.
 
 ```
 sharpmas.slnx
@@ -37,10 +35,7 @@ Cli               parses solve -y 2015 -d 1 --validate
     Outcome       renders answer, verdicts, and timing on one line
 ```
 
-A day is a `Puzzle` class implementing `ISolution<Puzzle>`: a static `Parse`
-that runs once and throws on bad input, and `PartOne`/`PartTwo` reading the
-parsed result. The registry in `SolveRun` is the only list of what has been
-solved; a day missing from it is skipped rather than failing.
+A day is a `Puzzle` class implementing `ISolution<Puzzle>`: a static `Parse` that runs once and throws on bad input, and `PartOne`/`PartTwo` reading the parsed result. The registry in `SolveRun` is the only list of what has been solved; a day missing from it is skipped rather than failing.
 
 ## The cache
 
@@ -51,6 +46,4 @@ cache/2015/01/part_one.md   puzzle text
 cache/2015/01/part_two.md   puzzle text, absent until part one is solved
 ```
 
-Every file is readable on its own. The session hash is what catches a swapped
-account, since inputs are account specific. Part two's absence means still
-locked, which is rechecked each run until it arrives.
+Every file is readable on its own. The session hash is what catches a swapped account, since inputs are account specific. Part two's absence means still locked, which is rechecked each run until it arrives.
