@@ -10,32 +10,21 @@
 
 ### Check before committing, not after
 
-`dotnet test`, then `dotnet build` read for warnings. A warning here is worth
-treating as a failure: several bugs in this repo's history compiled clean, and
-the ones that did warn said exactly what was wrong.
+`dotnet test`, then `dotnet build` read for warnings. A warning here is worth treating as a failure: several bugs in this repo's history compiled clean, and the ones that did warn said exactly what was wrong.
 
 Run `dotnet format` too, since the build does not check `.editorconfig`.
 
-CI in `.github/workflows/ci.yml` runs the same checks on every push to `main` or
-`scadoshi`, with `dotnet build -warnaserror` and `dotnet format
---verify-no-changes`, so a red run means one of these was skipped. Run them
-locally first rather than letting CI find it.
+CI in `.github/workflows/ci.yml` runs the same checks on every push to `main` or `scadoshi`, with `dotnet build -warnaserror` and `dotnet format --verify-no-changes`, so a red run means one of these was skipped. Run them locally first rather than letting CI find it.
 
-If a change touches instructions, follow them rather than reading them. In
-rustmas the README's "adding a solution" steps went stale three times, twice
-while someone was looking straight at them.
+If a change touches instructions, follow them rather than reading them. In rustmas the README's "adding a solution" steps went stale three times, twice while someone was looking straight at them.
 
 ### Never leave a commit that does not build
 
-Fold a fix into the commit that needs it rather than committing after it, so no
-commit in history is broken.
+Fold a fix into the commit that needs it rather than committing after it, so no commit in history is broken.
 
 ### Committing across both branches
 
-Tool changes land on `main` first, then merge down. See
-[`branches.md`](branches.md) for what belongs where. The work happens in a
-worktree rather than by switching branches, which also avoids the trap of
-untracked files following a checkout:
+Tool changes land on `main` first, then merge down. See [`branches.md`](branches.md) for what belongs where. The work happens in a worktree rather than by switching branches, which also avoids the trap of untracked files following a checkout:
 
 ```sh
 git worktree add /tmp/wt main
@@ -43,6 +32,4 @@ git worktree add /tmp/wt main
 git worktree remove /tmp/wt
 ```
 
-Only copy files that are identical on both branches. `git diff main <branch>
---name-only` lists the ones that are not, and those get the same edit by hand on
-each side.
+Only copy files that are identical on both branches. `git diff main <branch> --name-only` lists the ones that are not, and those get the same edit by hand on each side.
