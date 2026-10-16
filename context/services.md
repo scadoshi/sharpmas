@@ -1,17 +1,32 @@
 # The two services
 
-Full contracts, verified live and against the solver's source, are in `rustmas/context/references.md`. This is the short version.
+This is the short version. The full contracts, verified live and against the solver's source, are in `rustmas/context/references.md`.
 
 ## adventofcode.com
 
-Authenticated by session cookie. Grades each part exactly once; a second correct answer reports "already solved" rather than confirming again.
+The site authenticates with the session cookie. It grades each part exactly once, and a second correct answer comes back as "already solved" instead of another confirmation.
 
-Returns **200 for everything**, wrong answers included, so a submission's verdict is read from the response body. Direction hints are checked before the generic wrong-answer phrase, since a "too high" reply contains both. An expired cookie redirects to the login page, which also comes back 200: zero puzzle articles on the page is the tell.
+It returns 200 for everything, wrong answers included. That has a few consequences:
+
+- The client reads a submission's verdict from the response body.
+- It checks for the direction hints before the generic wrong-answer phrase, since a "too high" reply contains both.
+- An expired cookie redirects to the login page, which is also a 200. A page with zero puzzle articles is how the client spots it.
 
 ## The third-party solver
 
-No auth, no accounts, no memory, so it answers the same question as often as asked. That is what makes it usable as a free check before submitting. Every failure is a **400 with the reason in the body**; `Unsupported` means it has no implementation for that puzzle. Three deployments run the same code, so a 5xx is the host rather than the solver, and the client tries the next one.
+The solver has no auth, no accounts, and no memory, so it'll answer the same question as many times as you ask. That's why it works as a free check before submitting.
+
+- Every failure is a 400 with the reason in the body.
+- `Unsupported` in that body means it has no implementation for the puzzle.
+- Three deployments run the same code. A 5xx means the host is down, not the solver, so the client moves on to the next one.
 
 ## Etiquette
 
-Never re-download an input, never republish puzzle text, send a `User-Agent` naming a reachable contact, and expect an escalating cooldown after wrong answers. The tool follows all four; the cooldown is why submission gates on a solver check.
+The tool follows four rules:
+
+1. Never re-download an input.
+2. Never republish puzzle text.
+3. Send a `User-Agent` that names a reachable contact.
+4. Expect an escalating cooldown after wrong answers.
+
+The cooldown is the reason submitting waits for a solver check.

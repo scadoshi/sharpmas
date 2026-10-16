@@ -2,10 +2,15 @@
 
 Helpers more than one day needs.
 
-Empty on `main` on purpose. Put a type here the second day wants it, not the first: a helper written for one puzzle is a helper shaped by one puzzle.
+It's empty on `main` on purpose. Add a type here when the second day wants it, not the first, because a helper written for one puzzle ends up shaped by that puzzle.
 
-What tends to end up here is grid and geometry work, since Advent of Code returns to it every year. A cartesian point, a grid cell with rows and columns, a compass direction, a quarter turn.
+Grid and geometry work tends to land here, since Advent of Code comes back to it every year:
 
-These are the shared types the testing rule is about. A break here corrupts every day at once, so anything in this folder earns tests, where a single day's logic does not: that is what `--validate` is for.
+- a cartesian point
+- a grid cell with rows and columns
+- a compass direction
+- a quarter turn
 
-Namespace them `Sharpmas.Domain.Solution.Common`, matching the folder.
+Test everything in this folder. A break here corrupts every day at once. A single day's logic doesn't need tests, because `--validate` covers it.
+
+Use the namespace `Sharpmas.Domain.Solution.Common` to match the folder.
