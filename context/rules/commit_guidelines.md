@@ -14,6 +14,13 @@
 treating as a failure: several bugs in this repo's history compiled clean, and
 the ones that did warn said exactly what was wrong.
 
+Run `dotnet format` too, since the build does not check `.editorconfig`.
+
+CI in `.github/workflows/ci.yml` runs the same checks on every push to `main` or
+`scadoshi`, with `dotnet build -warnaserror` and `dotnet format
+--verify-no-changes`, so a red run means one of these was skipped. Run them
+locally first rather than letting CI find it.
+
 If a change touches instructions, follow them rather than reading them. In
 rustmas the README's "adding a solution" steps went stale three times, twice
 while someone was looking straight at them.
