@@ -1,3 +1,5 @@
 # Journal
 
-One file per day in [`journal/`](journal/), newest date last in a directory listing. Within a day, later sessions sit above earlier ones.
+Each day gets one file in [`journal/`](journal/), named by date, so a directory listing puts the newest last.
+
+Inside a day's file it runs the other way: later sessions sit above earlier ones.

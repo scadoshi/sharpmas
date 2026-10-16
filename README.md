@@ -2,7 +2,7 @@
 
 Advent of Code tooling in C#, rebuilt from [rustmas](https://github.com/scadoshi/rustmas). It downloads your inputs, runs your solutions, checks the answers against an independent solver, and submits them for stars.
 
-This is Scotty's working branch, with his solutions attached. The `main` branch is the same tool with no solutions, which is the one to clone if you want a starting point.
+This is Scotty's working branch, with his solutions attached. If you want a starting point, clone `main` instead: it's the same tool with no solutions.
 
 ![rustmas and sharpmas side by side on the same puzzle, same answers, different timings](demo/demo.gif)
 
@@ -25,21 +25,29 @@ sharpmas solve -y 2015 -d 1 --validate   # check answers against the solver
 sharpmas solve -y 2015 -d 1 --submit     # check, then send for stars
 ```
 
-Drop `-y` or `-d` to run all years or days. `--submit` only sends answers the solver agrees with, since wrong ones cost an escalating cooldown. Add `-c Release` after the project path on brute-force days.
+A few things to know:
+
+- Drop `-y` or `-d` to run all years or all days.
+- `--submit` holds back any answer the solver disagrees with, because wrong ones cost an escalating cooldown. A puzzle the solver can't check goes through anyway.
+- On brute-force days, add `-c Release` after the project path.
 
 ## Writing a day
+
+Copy the template into a year folder:
 
 ```sh
 cp -r src/Sharpmas/Domain/Solution/YearTemplate src/Sharpmas/Domain/Solution/Year2015
 ```
 
-Fix the namespace in `Day01/Puzzle.cs` to `Sharpmas.Domain.Solution.Year2015.Day01`. Each part returns `Answer.Solved(value)`, `Answer.Visual(art)`, or `Answer.None()`:
+Then:
+
+1. Fix the namespace in `Day01/Puzzle.cs` to `Sharpmas.Domain.Solution.Year2015.Day01`.
+2. Make each part return `Answer.Solved(value)`, `new Answer.Visual(art)`, or `new Answer.None()`.
+3. Register the day in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`.
 
 ```csharp
 public Answer PartOne() => Answer.Solved(Input.Length.ToString());
 ```
-
-Register it in `Solvers` in `src/Sharpmas/Inbound/Solve/SolveRun.cs`:
 
 ```csharp
 [(2015, 1)] = Outbound.Client.Solver.Solve<Domain.Solution.Year2015.Day01.Puzzle>,
@@ -67,9 +75,9 @@ year 2015 day 1 in 950.7µs (35.5µs parsing)
 | `(none)` / `(unwritten)` | No answer exists (day 25 part two) / not written yet |
 | `error: ...` | The part failed; the other still ran |
 
-Multi-day runs finish with total and average parse and solve times. Timings never include the network.
+Runs over more than one day finish with total and average parse and solve times. Timings never include the network.
 
-Re-running `fetch` never re-downloads, and without a cookie `solve` and `--validate` still work offline. More in [`context/`](context/).
+Re-running `fetch` never re-downloads. Without a cookie, `solve` and `--validate` still work offline. There's more in [`context/`](context/).
 
 ## License
 

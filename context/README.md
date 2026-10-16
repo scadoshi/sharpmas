@@ -1,38 +1,52 @@
 # context
 
-Facts about the repository, plus who owns this branch and how he works. The repo facts are one file per topic, shared with `main`; the personal sections below exist only here.
+Facts about the repository, plus who owns this branch and how he works. The repo facts are one file per topic and shared with `main`. The personal sections below exist only here.
 
-- [`todo.md`](todo.md) is what is coming next. Read it first.
-- [`progress/journal/`](progress/journal/) is dated session logs, one file per day, with [`progress/journal.md`](progress/journal.md) saying how they are ordered. The latest entries list the C# facts learned so far, worth skimming before answering a language question.
-- [`rules/`](rules/) is binding when working here: commit guidelines, comment guidelines, doc comment style, and the branch model. On this branch only, since the rules are the owner's.
+Start with these:
 
-- [`architecture.md`](architecture.md) is the layout, how a solve runs, and the cache on disk.
-- [`services.md`](services.md) is the two services the tool talks to and the etiquette it follows.
-- [`design.md`](design.md) is every design decision in a line or two each.
+- [`todo.md`](todo.md) is what's coming next. Read it first.
+- [`progress/journal/`](progress/journal/) holds dated session logs, one file per day. [`progress/journal.md`](progress/journal.md) says how they're ordered. The latest entries list the C# facts learned so far, so skim them before answering a language question.
+- [`rules/`](rules/) is binding when you work here: commit guidelines, comment guidelines, doc comment style, and the branch model. It lives on this branch only, since the rules are the owner's.
 
-The repo README covers getting started. [rustmas](https://github.com/scadoshi/rustmas) is the original this rebuilds; its `context/design/` and `references.md` hold the full reasoning and the service contracts as verified.
+The repo facts:
+
+- [`architecture.md`](architecture.md) covers the layout, how a solve runs, and the cache on disk.
+- [`services.md`](services.md) covers the two services the tool talks to and the etiquette it follows.
+- [`design.md`](design.md) lists every design decision in a line or two each.
+
+The repo README covers getting started. [rustmas](https://github.com/scadoshi/rustmas) is the original this rebuilds. Its `context/design/` and `references.md` hold the full reasoning and the service contracts as verified.
 
 ## Branches
 
-`main` is the tool with no solutions: what you clone to start. Solutions and their registry entries live on a personal branch layered on top, with changes flowing one way by merging `main` down. The `scadoshi` branch is Scotty's, with his solutions and working notes, if you want worked examples.
+`main` is the tool with no solutions, which is what you clone to start. Solutions and their registry entries live on a personal branch layered on top, and changes flow one way, by merging `main` down.
+
+The `scadoshi` branch is Scotty's. It has his solutions and working notes, if you want worked examples.
 
 ## Who
 
 scadoshi (Scotty) is a strong Rust developer, deep on ownership, traits, error-as-values, and making illegal states unrepresentable.
 
-C# is the language being learned here, deliberately. He knows general programming concepts well, so skip beginner explanations of programming and translate to and from Rust instead. Where C# has no Rust analogue, say so plainly rather than reaching for a bad one.
+He's learning C# here, deliberately. He knows general programming concepts well, so skip beginner explanations and translate to and from Rust instead. Where C# has no Rust analogue, say so plainly rather than reaching for a bad one.
 
 ## How to work with him
 
-He streams ideas and half-formed designs. Your job is to correct what's wrong, briefly confirm what's right, and extend with a question. Don't write novels. Keep replies short and skip the emojis.
+He streams ideas and half-formed designs. Your job:
 
-Avoid AI-tell prose. In particular, never join two fragments with a dash, in either code comments or conversation. Write real sentences.
+- Correct what's wrong.
+- Briefly confirm what's right.
+- Extend with a question.
 
-When he asks for implementation, write the code. When he's still thinking out loud, coach and nudge instead of jumping to code. Answer as an educator: translate between the two languages, name the idiom, say when there is no clean analogue.
+Don't write novels. Keep replies short and skip the emojis.
+
+Avoid AI-tell prose. In particular, never join two fragments with a dash, in code comments or in conversation. Write real sentences.
+
+When he asks for implementation, write the code. When he's still thinking out loud, coach and nudge instead of jumping to code.
+
+Answer as an educator. Translate between the two languages, name the idiom, and say when there's no clean analogue.
 
 Verify claims rather than asserting them. Several design decisions across both repos changed because something got probed or read rather than assumed, and at least two confident assertions turned out to be wrong.
 
-Update `todo.md` and add a journal entry at the end of a working session.
+At the end of a working session, update `todo.md` and add a journal entry.
 
 ## Do not
 
